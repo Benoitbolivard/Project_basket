@@ -1,0 +1,29 @@
+name: Update Roadmap
+on:
+  pull_request:
+    types: [closed]
+permissions:
+  contents: write
+jobs:
+  strike-done:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Parse completed tags
+        id: tags
+        run: |
+          echo "COMPLETED=$(grep -oE 'closes TASK:[A-Z]+' <<< '${{ github.event.pull_request.body }}' | cut -d: -f2 | tr '\n' ',' | sed 's/,$//')" >> $GITHUB_OUTPUT
+      - name: Update ROADMAP
+        env:
+          COMPLETED_TAGS: ${{ steps.tags.outputs.COMPLETED }}
+        run: |
+          python scripts/update_roadmap.py
+      - name: Commit roadmap
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git commit -am "chore(roadmap): strike completed tasks" || echo "No changes"
+          git push
