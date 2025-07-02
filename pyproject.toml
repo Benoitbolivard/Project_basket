@@ -11,16 +11,30 @@ uvicorn = {extras = ["standard"], version = "*"}
 pydantic = "*"
 opencv-python = "*"
 ultralytics = "*"
+httpx = "<0.28"
 
 
 [tool.poetry.group.dev.dependencies]
-ruff = "*"
-black = "*"
-isort = "*"
-pytest = "*"
-pytest-asyncio = "*"
-pre-commit = "*"
-detect-secrets = "*"
+ruff = "^0.4.4"
+black = "^24.4.0"
+isort = "^5.13.2"
+pytest = "^8.2.0"
+pytest-asyncio = "^0.23.6"
+pre-commit = "^3.7.0"
+detect-secrets = "^1.4.0"
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "I"]
+ignore = ["E501"]
 
 [build-system]
 requires = ["poetry-core"]

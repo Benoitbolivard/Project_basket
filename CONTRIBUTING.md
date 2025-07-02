@@ -1,6 +1,8 @@
 # Contributing
 
 ## Roadmap auto-update
-Lorsque ta PR règle une tâche, ajoute dans la description :
-✅ closes TASK:<TAG>
-(ex. ✅ closes TASK:CI)
+Quand ta Pull Request clôt une tâche de la roadmap, ajoute :
+
+✅ closes TASK:
+
+Exemple : `✅ closes TASK:CI`
