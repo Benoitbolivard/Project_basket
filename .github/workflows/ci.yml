@@ -1,0 +1,21 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Set up Poetry
+        uses: Gr1N/setup-poetry@v8
+      - name: Install deps
+        run: poetry install --with dev --no-root
+      - name: Run tests
+        run: poetry run pytest -q
