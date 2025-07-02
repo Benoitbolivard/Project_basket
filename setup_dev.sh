@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+poetry add --group dev ruff black isort pytest pytest-asyncio pre-commit detect-secrets
+
+cat > .pre-commit-config.yaml <<'CFG'
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
+    hooks: [id: ruff]
+  - repo: https://github.com/psf/black
+    rev: 24.4.0
+    hooks: [id: black]
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks: [id: isort]
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks: [id: detect-secrets]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+CFG
+
+pre-commit install
