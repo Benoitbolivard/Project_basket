@@ -1,0 +1,23 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  lint-test-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install --with dev --no-root
+      - name: Pre-commit hooks
+        run: |
+          poetry run ruff .
+          poetry run black --check .
+          poetry run isort --check .
+      - name: Run tests
+        run: poetry run pytest -q
+      - name: Build Docker
+        run: docker build -f docker/Dockerfile.backend -t project_basket:ci .
