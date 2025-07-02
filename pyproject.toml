@@ -12,7 +12,8 @@ pydantic = "*"
 opencv-python = "*"
 ultralytics = "*"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
 
 [build-system]
 requires = ["poetry-core"]
