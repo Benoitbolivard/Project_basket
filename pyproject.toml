@@ -11,9 +11,23 @@ uvicorn = {extras = ["standard"], version = "*"}
 pydantic = "*"
 opencv-python = "*"
 ultralytics = "*"
+httpx = "*"
 
 [tool.poetry.dev-dependencies]
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "I"]
+ignore = ["E501"]
