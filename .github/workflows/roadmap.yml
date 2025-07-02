@@ -19,8 +19,7 @@ jobs:
       - name: Update ROADMAP
         env:
           COMPLETED_TAGS: ${{ steps.tags.outputs.COMPLETED }}
-        run: |
-          python scripts/update_roadmap.py
+        run: python scripts/update_roadmap.py
       - name: Commit roadmap
         run: |
           git config user.name "github-actions"
