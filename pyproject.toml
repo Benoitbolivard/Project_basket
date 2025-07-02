@@ -12,7 +12,15 @@ pydantic = "*"
 opencv-python = "*"
 ultralytics = "*"
 
-[tool.poetry.dev-dependencies]
+
+[tool.poetry.group.dev.dependencies]
+ruff = "*"
+black = "*"
+isort = "*"
+pytest = "*"
+pytest-asyncio = "*"
+pre-commit = "*"
+detect-secrets = "*"
 
 [build-system]
 requires = ["poetry-core"]
