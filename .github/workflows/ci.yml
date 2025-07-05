@@ -16,5 +16,10 @@ jobs:
         run: |
           pip install poetry
           poetry install --with dev --no-root
+      - name: Run linters
+        run: |
+          poetry run ruff .
+          poetry run black --check .
+          poetry run isort --check-only .
       - name: Run tests
         run: poetry run pytest
