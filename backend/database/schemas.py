@@ -49,3 +49,31 @@ class StatsSnapshotSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+# Additional schemas used for the API
+class GameOut(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
+class EventIn(BaseModel):
+    type: str
+    timestamp: datetime | None = None
+    game_id: int
+    player_id: int | None = None
+    team_id: int | None = None
+
+
+class StatsOut(BaseModel):
+    id: int
+    data: str | None = None
+    game_id: int
+    player_id: int | None = None
+    team_id: int | None = None
+
+    class Config:
+        orm_mode = True
