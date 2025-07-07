@@ -16,5 +16,10 @@ jobs:
         run: |
           pip install poetry
           poetry install --with dev --no-root
+      - name: Pre-commit hooks (ruff / black / isort)
+        run: |
+          poetry run ruff check .
+          poetry run black --check .
+          poetry run isort --check-only .
       - name: Run tests
         run: poetry run pytest
