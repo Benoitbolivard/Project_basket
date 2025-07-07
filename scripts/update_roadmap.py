@@ -16,14 +16,12 @@ def main():
 
     updated_lines = []
     for line in lines:
-        updated = False
         for tag in tags:
             pattern = rf'^- \[ \] <!--TASK:{re.escape(tag)}-->(.*)$'
             m = re.match(pattern, line)
             if m:
                 desc = m.group(1).strip()
                 line = f"- [x] <!--TASK:{tag}-->~~{desc}~~\n"
-                updated = True
                 break
         updated_lines.append(line)
 
