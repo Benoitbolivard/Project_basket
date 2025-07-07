@@ -11,6 +11,9 @@ uvicorn = {extras = ["standard"], version = "*"}
 pydantic = "*"
 opencv-python = "*"
 ultralytics = "*"
+filterpy = "*"
+scipy = "*"
+scikit-learn = "*"
 
 
 [tool.poetry.group.dev.dependencies]
