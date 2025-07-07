@@ -11,6 +11,9 @@ uvicorn = {extras = ["standard"], version = "*"}
 pydantic = "*"
 opencv-python = "*"
 ultralytics = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
+alembic = "*"
 
 
 [tool.poetry.group.dev.dependencies]
