@@ -1,8 +1,8 @@
 ## Phase 0 – Socle
-- [ ] <!--TASK:INIT-->Initialisation du monorepo Poetry
-- [ ] <!--TASK:CI-->Mise en place qualité + CI
+- [x] <!--TASK:INIT-->~~Initialisation du monorepo Poetry~~
+- [x] <!--TASK:CI-->~~Mise en place qualité + CI~~
 ## Phase 1 – Vision de base
-- [ ] <!--TASK:DETECT-->Détection YOLO + export JSON
+- [x] <!--TASK:DETECT-->~~Détection YOLO + export JSON~~
 - [ ] <!--TASK:TRACK-->Tracking DeepSORT
 ## Phase 2 – Backend & DB
 - [ ] <!--TASK:SCHEMA-->Schéma Postgres + migrations
