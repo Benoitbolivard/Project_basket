@@ -6,8 +6,9 @@ authors = []
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = "*"
-uvicorn = {extras = ["standard"], version = "*"}
+fastapi = "^0.115.14"
+uvicorn = "^0.35.0"
+httpx = "^0.27.2"
 pydantic = "*"
 opencv-python = "*"
 ultralytics = "*"
@@ -17,13 +18,13 @@ alembic = "*"
 
 
 [tool.poetry.group.dev.dependencies]
-ruff = "*"
-black = "*"
-isort = "*"
-pytest = "*"
-pytest-asyncio = "*"
-pre-commit = "*"
-detect-secrets = "*"
+ruff = "^0.4.10"
+black = "^24.10.0"
+isort = "^5.13.2"
+pytest = "^8.4.1"
+pytest-asyncio = "^0.23.8"
+pre-commit = "^3.8.0"
+detect-secrets = "^1.5.0"
 
 [build-system]
 requires = ["poetry-core"]
