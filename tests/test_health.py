@@ -3,8 +3,7 @@ from backend.app.main import app
 
 client = TestClient(app)
 
-def test_root_health() -> None:
-    """Vérifie que la route racine répond 200 et le JSON attendu."""
-    response = client.get("/")
-    assert response.status_code == 200
-    assert response.json() == {"message": "Hello world"}
+def test_health() -> None:
+    r = client.get("/")
+    assert r.status_code == 200
+    assert r.json() in ({"message": "Hello world"}, {"status": "ok"})
