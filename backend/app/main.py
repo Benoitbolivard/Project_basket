@@ -7,11 +7,11 @@ from pathlib import Path
 import tempfile
 import uuid
 import os
-import os
 import sys
 from typing import Dict, Any, List
 import redis
 from rq import Queue, Job
+from datetime import timedelta
 
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -26,6 +26,13 @@ from .models import (
 )
 from .database import get_db, init_db
 from . import crud
+from .auth import (
+    authenticate_user,
+    create_access_token,
+    hash_password,
+    get_current_user,
+    require_club_access
+)
 
 app = FastAPI(title="Basketball Analytics API", version="1.0.0")
 
@@ -755,6 +762,186 @@ async def get_match_stats(match_id: int, db: Session = Depends(get_db)):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error retrieving match stats: {str(e)}")
+
+
+# Authentication endpoints
+@app.post("/auth/register")
+async def register_user(
+    username: str,
+    email: str,
+    password: str,
+    role: str = "public",
+    club_id: int = None,
+    db: Session = Depends(get_db)
+):
+    """Register a new user."""
+    try:
+        # Check if user already exists
+        if crud.get_user_by_username(db, username):
+            raise HTTPException(status_code=400, detail="Username already taken")
+        
+        if crud.get_user_by_email(db, email):
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Validate role
+        if role not in ["public", "club"]:
+            raise HTTPException(status_code=400, detail="Invalid role. Must be 'public' or 'club'")
+        
+        # Hash password and create user
+        hashed_password = hash_password(password)
+        user = crud.create_user(
+            db, 
+            email=email, 
+            username=username, 
+            hashed_password=hashed_password,
+            role=role,
+            club_id=club_id
+        )
+        
+        return {
+            "message": "User registered successfully",
+            "user_id": user.id,
+            "username": user.username,
+            "role": user.role
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
+
+
+@app.post("/auth/login")
+async def login_user(
+    username: str,
+    password: str,
+    db: Session = Depends(get_db)
+):
+    """Login user and return access token."""
+    try:
+        user = authenticate_user(db, username, password)
+        if not user:
+            raise HTTPException(
+                status_code=401,
+                detail="Incorrect username or password"
+            )
+        
+        # Create access token
+        access_token = create_access_token(
+            data={"sub": user.username, "role": user.role, "user_id": user.id}
+        )
+        
+        # Update last login
+        from datetime import datetime
+        user.last_login = datetime.utcnow()
+        db.commit()
+        
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "role": user.role,
+                "club_id": user.club_id
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
+
+
+@app.get("/auth/me")
+async def get_current_user_info(current_user = Depends(get_current_user)):
+    """Get current user information."""
+    return {
+        "id": current_user.id,
+        "username": current_user.username,
+        "email": current_user.email,
+        "role": current_user.role,
+        "club_id": current_user.club_id,
+        "is_active": current_user.is_active,
+        "created_at": current_user.created_at,
+        "last_login": current_user.last_login
+    }
+
+
+# Protected club endpoints
+@app.get("/club/dashboard-data")
+async def get_club_dashboard_data(
+    current_user = Depends(require_club_access()),
+    db: Session = Depends(get_db)
+):
+    """Get dashboard data for club users."""
+    try:
+        if not current_user.club_id:
+            raise HTTPException(status_code=400, detail="User not associated with a club")
+        
+        # Get club info
+        club = crud.get_club(db, current_user.club_id)
+        if not club:
+            raise HTTPException(status_code=404, detail="Club not found")
+        
+        # Get club players and their stats
+        players = crud.get_players_by_club(db, current_user.club_id)
+        
+        player_stats = []
+        for player in players:
+            stats = crud.get_player_all_stats(db, player.id)
+            
+            # Calculate aggregated stats
+            total_minutes = sum(s.minutes_played for s in stats)
+            total_distance = sum(s.distance_covered_m for s in stats)
+            total_touches = sum(s.ball_touches for s in stats)
+            avg_speed = sum(s.avg_speed_kmh for s in stats) / len(stats) if stats else 0
+            games_played = len(stats)
+            
+            player_stats.append({
+                "player_id": player.id,
+                "player_name": player.name,
+                "jersey_number": player.jersey_number,
+                "position": player.position,
+                "games_played": games_played,
+                "total_minutes": round(total_minutes, 1),
+                "total_distance_m": round(total_distance, 1),
+                "avg_speed_kmh": round(avg_speed, 1),
+                "total_ball_touches": total_touches,
+                "avg_touches_per_game": round(total_touches / games_played, 1) if games_played > 0 else 0
+            })
+        
+        return {
+            "club": {
+                "id": club.id,
+                "name": club.name,
+                "code": club.code,
+                "city": club.city
+            },
+            "players": player_stats,
+            "summary": {
+                "total_players": len(players),
+                "active_players": len([p for p in player_stats if p["games_played"] > 0])
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving dashboard data: {str(e)}")
+
+
+@app.post("/club/upload")
+async def club_upload_video(
+    file: UploadFile = File(...),
+    confidence_threshold: float = 0.25,
+    visualize: bool = True,
+    save_frames: bool = False,
+    current_user = Depends(require_club_access())
+):
+    """Protected video upload for club users."""
+    return await upload_video_with_queue(file, confidence_threshold, visualize, save_frames)
 
 
 # Add endpoint for live data (for frontend dashboard)

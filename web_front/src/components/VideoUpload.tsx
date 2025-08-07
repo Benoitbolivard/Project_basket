@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { AuthService } from '@/lib/auth'
 
 interface UploadStatus {
   uploading: boolean
@@ -48,8 +49,15 @@ export default function VideoUpload() {
       formData.append('visualize', 'true')
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-      const response = await fetch(`${apiUrl}/upload`, {
+      
+      // Use the protected club upload endpoint if user is authenticated with club role
+      const uploadEndpoint = AuthService.hasRole('club') ? '/club/upload' : '/upload'
+      
+      const response = await fetch(`${apiUrl}${uploadEndpoint}`, {
         method: 'POST',
+        headers: {
+          ...AuthService.getAuthHeaders(),
+        },
         body: formData,
       })
 
