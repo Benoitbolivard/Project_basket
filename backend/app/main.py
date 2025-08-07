@@ -7,8 +7,11 @@ from pathlib import Path
 import tempfile
 import uuid
 import os
+import os
 import sys
 from typing import Dict, Any, List
+import redis
+from rq import Queue, Job
 
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -26,12 +29,16 @@ from . import crud
 
 app = FastAPI(title="Basketball Analytics API", version="1.0.0")
 
+# Environment variables with defaults
+import os
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001").split(",")
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your frontend domain
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 
@@ -44,6 +51,16 @@ if frontend_path.exists():
 @app.on_event("startup")
 async def startup_event():
     init_db()
+
+# Initialize Redis connection for job queue
+redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379')
+try:
+    redis_conn = redis.from_url(redis_url)
+    job_queue = Queue('video_processing', connection=redis_conn)
+except Exception as e:
+    print(f"Redis connection failed: {e}. Job queue disabled.")
+    redis_conn = None
+    job_queue = None
 
 # Global processor instance
 processor = None
@@ -121,28 +138,69 @@ async def analyze_video(
             error=str(e)
         )
 
-@app.post("/analyze/upload")
-async def analyze_uploaded_video(
-    background_tasks: BackgroundTasks,
+@app.get("/jobs/{job_id}")
+async def get_job_status(job_id: str):
+    """
+    Get RQ job status and results.
+    
+    Args:
+        job_id: RQ job ID
+        
+    Returns:
+        Job status and results
+    """
+    if not redis_conn:
+        raise HTTPException(status_code=503, detail="Job queue not available")
+    
+    try:
+        job = Job.fetch(job_id, connection=redis_conn)
+        
+        result = {
+            "job_id": job_id,
+            "status": job.get_status(),
+            "created_at": job.created_at.isoformat() if job.created_at else None,
+            "started_at": job.started_at.isoformat() if job.started_at else None,
+            "ended_at": job.ended_at.isoformat() if job.ended_at else None,
+            "result": job.result,
+            "exc_info": job.exc_info,
+            "progress": getattr(job.meta, 'progress', 0) if hasattr(job, 'meta') else 0
+        }
+        
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Job not found: {str(e)}")
+
+
+@app.post("/upload")
+async def upload_video_with_queue(
     file: UploadFile = File(...),
     confidence_threshold: float = 0.25,
     visualize: bool = True,
-    save_frames: bool = False,
-    db: Session = Depends(get_db)
+    save_frames: bool = False
 ):
     """
-    Upload and analyze a basketball video file.
+    Upload video and queue for processing with enhanced validation.
     
     Args:
         file: Uploaded video file
         confidence_threshold: Detection confidence threshold
         visualize: Create visualized output video
         save_frames: Save individual analyzed frames
-        db: Database session
         
     Returns:
-        Analysis response with results
+        Job ID for tracking processing status
     """
+    # Validate file size
+    max_size_mb = int(os.getenv('MAX_UPLOAD_SIZE_MB', '100'))
+    if hasattr(file, 'size') and file.size > max_size_mb * 1024 * 1024:
+        raise HTTPException(status_code=413, detail=f"File too large. Max size: {max_size_mb}MB")
+    
+    # Validate MIME type
+    allowed_types = os.getenv('ALLOWED_VIDEO_TYPES', 'video/mp4,video/avi,video/mov').split(',')
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=415, detail=f"Invalid file type. Allowed: {', '.join(allowed_types)}")
+    
     try:
         # Create temporary file
         with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as temp_file:
@@ -150,28 +208,71 @@ async def analyze_uploaded_video(
             temp_file.write(content)
             temp_video_path = temp_file.name
         
-        # Create analysis request
-        request = AnalysisRequest(
-            video_path=temp_video_path,
-            confidence_threshold=confidence_threshold,
-            visualize=visualize,
-            save_frames=save_frames
+        # Generate analysis ID
+        analysis_id = str(uuid.uuid4())
+        
+        # Create analysis record in database
+        db = next(get_db())
+        crud.create_analysis(
+            db, 
+            analysis_id, 
+            temp_video_path,
+            confidence_threshold,
+            visualize,
+            save_frames
         )
         
-        # Analyze video
-        response = await analyze_video(background_tasks, request, db)
-        
-        # Schedule cleanup
-        background_tasks.add_task(cleanup_temp_file, temp_video_path)
-        
-        return response
+        # Queue job for processing if Redis available
+        if job_queue:
+            from workers.video_processor import process_video_job
+            
+            job_config = {
+                'confidence_threshold': confidence_threshold,
+                'visualize': visualize,
+                'save_frames': save_frames,
+                'output_video_path': None,
+                'output_json_path': None
+            }
+            
+            job = job_queue.enqueue(
+                process_video_job,
+                analysis_id,
+                temp_video_path,
+                job_config,
+                timeout=int(os.getenv('REDIS_JOB_TIMEOUT', '3600'))
+            )
+            
+            return {
+                "success": True,
+                "message": "Video uploaded and queued for processing",
+                "analysis_id": analysis_id,
+                "job_id": job.id
+            }
+        else:
+            # Fallback to background task if Redis not available
+            from fastapi import BackgroundTasks
+            background_tasks = BackgroundTasks()
+            background_tasks.add_task(
+                process_video_background, 
+                analysis_id, 
+                AnalysisRequest(
+                    video_path=temp_video_path,
+                    confidence_threshold=confidence_threshold,
+                    visualize=visualize,
+                    save_frames=save_frames
+                ),
+                db
+            )
+            
+            return {
+                "success": True,
+                "message": "Video uploaded and processing started",
+                "analysis_id": analysis_id,
+                "job_id": None
+            }
         
     except Exception as e:
-        return AnalysisResponse(
-            success=False,
-            message="Upload and analysis failed",
-            error=str(e)
-        )
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
 @app.get("/analyze/{analysis_id}")
 async def get_analysis_results(analysis_id: str, db: Session = Depends(get_db)):
@@ -480,6 +581,180 @@ async def get_shot_chart_data(analysis_id: str, db: Session = Depends(get_db)):
             shot_chart_data["zones"][zone]["makes"] += 1
     
     return shot_chart_data
+
+
+# New stats endpoints
+@app.get("/players/{player_id}/stats")
+async def get_player_stats(
+    player_id: int, 
+    match_id: int = None,
+    db: Session = Depends(get_db)
+):
+    """
+    Get player statistics, optionally filtered by match.
+    
+    Args:
+        player_id: Player ID
+        match_id: Optional match ID to filter stats
+        db: Database session
+        
+    Returns:
+        Player statistics
+    """
+    try:
+        # Get player info
+        player = crud.get_player(db, player_id)
+        if not player:
+            raise HTTPException(status_code=404, detail="Player not found")
+        
+        # Get stats
+        if match_id:
+            stats = crud.get_player_match_stats(db, player_id, match_id)
+            if not stats:
+                raise HTTPException(status_code=404, detail="Stats not found for this player and match")
+            stats_list = [stats]
+        else:
+            stats_list = crud.get_player_all_stats(db, player_id)
+        
+        # Calculate aggregated stats
+        total_stats = {
+            "player_id": player_id,
+            "player_name": player.name,
+            "club_name": player.club.name if player.club else None,
+            "jersey_number": player.jersey_number,
+            "position": player.position,
+            "games_played": len(stats_list),
+            "total_minutes": sum(s.minutes_played for s in stats_list),
+            "total_points": sum(s.points for s in stats_list),
+            "total_field_goals_made": sum(s.field_goals_made for s in stats_list),
+            "total_field_goals_attempted": sum(s.field_goals_attempted for s in stats_list),
+            "field_goal_percentage": 0,
+            "total_three_points_made": sum(s.three_points_made for s in stats_list),
+            "total_three_points_attempted": sum(s.three_points_attempted for s in stats_list),
+            "three_point_percentage": 0,
+            "total_distance_covered_m": sum(s.distance_covered_m for s in stats_list),
+            "avg_speed_kmh": sum(s.avg_speed_kmh for s in stats_list) / len(stats_list) if stats_list else 0,
+            "max_speed_kmh": max((s.max_speed_kmh for s in stats_list), default=0),
+            "total_ball_touches": sum(s.ball_touches for s in stats_list),
+            "avg_ball_touches_per_game": sum(s.ball_touches for s in stats_list) / len(stats_list) if stats_list else 0
+        }
+        
+        # Calculate percentages
+        if total_stats["total_field_goals_attempted"] > 0:
+            total_stats["field_goal_percentage"] = round(
+                (total_stats["total_field_goals_made"] / total_stats["total_field_goals_attempted"]) * 100, 1
+            )
+        
+        if total_stats["total_three_points_attempted"] > 0:
+            total_stats["three_point_percentage"] = round(
+                (total_stats["total_three_points_made"] / total_stats["total_three_points_attempted"]) * 100, 1
+            )
+        
+        # Include individual game stats if requested
+        if match_id:
+            total_stats["match_stats"] = {
+                "match_id": match_id,
+                "minutes_played": stats_list[0].minutes_played,
+                "points": stats_list[0].points,
+                "field_goals": f"{stats_list[0].field_goals_made}/{stats_list[0].field_goals_attempted}",
+                "three_points": f"{stats_list[0].three_points_made}/{stats_list[0].three_points_attempted}",
+                "distance_covered_m": stats_list[0].distance_covered_m,
+                "avg_speed_kmh": stats_list[0].avg_speed_kmh,
+                "max_speed_kmh": stats_list[0].max_speed_kmh,
+                "ball_touches": stats_list[0].ball_touches,
+                "time_with_ball": stats_list[0].time_with_ball
+            }
+        
+        return total_stats
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving player stats: {str(e)}")
+
+
+@app.get("/matches/{match_id}/stats")
+async def get_match_stats(match_id: int, db: Session = Depends(get_db)):
+    """
+    Get aggregated statistics for a match.
+    
+    Args:
+        match_id: Match ID
+        db: Database session
+        
+    Returns:
+        Aggregated match statistics
+    """
+    try:
+        # Get match info
+        match = crud.get_match(db, match_id)
+        if not match:
+            raise HTTPException(status_code=404, detail="Match not found")
+        
+        # Get all player stats for this match
+        match_stats = crud.get_match_all_stats(db, match_id)
+        
+        # Separate home and away team stats
+        home_team_stats = [s for s in match_stats if s.player.club_id == match.home_club_id]
+        away_team_stats = [s for s in match_stats if s.player.club_id == match.away_club_id]
+        
+        def aggregate_team_stats(team_stats, team_name):
+            if not team_stats:
+                return {"team_name": team_name, "players": []}
+                
+            return {
+                "team_name": team_name,
+                "total_points": sum(s.points for s in team_stats),
+                "field_goals": f"{sum(s.field_goals_made for s in team_stats)}/{sum(s.field_goals_attempted for s in team_stats)}",
+                "field_goal_percentage": round(
+                    (sum(s.field_goals_made for s in team_stats) / sum(s.field_goals_attempted for s in team_stats) * 100) 
+                    if sum(s.field_goals_attempted for s in team_stats) > 0 else 0, 1
+                ),
+                "three_points": f"{sum(s.three_points_made for s in team_stats)}/{sum(s.three_points_attempted for s in team_stats)}",
+                "three_point_percentage": round(
+                    (sum(s.three_points_made for s in team_stats) / sum(s.three_points_attempted for s in team_stats) * 100) 
+                    if sum(s.three_points_attempted for s in team_stats) > 0 else 0, 1
+                ),
+                "total_distance_covered_m": round(sum(s.distance_covered_m for s in team_stats), 1),
+                "avg_team_speed_kmh": round(sum(s.avg_speed_kmh for s in team_stats) / len(team_stats), 1) if team_stats else 0,
+                "max_team_speed_kmh": round(max((s.max_speed_kmh for s in team_stats), default=0), 1),
+                "total_ball_touches": sum(s.ball_touches for s in team_stats),
+                "players": [
+                    {
+                        "player_id": s.player_id,
+                        "name": s.player.name,
+                        "jersey_number": s.player.jersey_number,
+                        "minutes_played": s.minutes_played,
+                        "points": s.points,
+                        "field_goals": f"{s.field_goals_made}/{s.field_goals_attempted}",
+                        "three_points": f"{s.three_points_made}/{s.three_points_attempted}",
+                        "distance_covered_m": s.distance_covered_m,
+                        "avg_speed_kmh": s.avg_speed_kmh,
+                        "ball_touches": s.ball_touches
+                    }
+                    for s in team_stats
+                ]
+            }
+        
+        result = {
+            "match_id": match_id,
+            "match_date": match.played_date.isoformat() if match.played_date else match.scheduled_date.isoformat(),
+            "home_team": aggregate_team_stats(home_team_stats, match.home_club.name),
+            "away_team": aggregate_team_stats(away_team_stats, match.away_club.name),
+            "final_score": {
+                "home": match.home_score,
+                "away": match.away_score
+            } if match.home_score is not None else None,
+            "duration_minutes": match.duration_minutes,
+            "status": match.status
+        }
+        
+        return result
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving match stats: {str(e)}")
 
 
 # Add endpoint for live data (for frontend dashboard)
