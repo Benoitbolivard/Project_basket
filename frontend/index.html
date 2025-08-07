@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Analytics Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+
+        .file-upload, .refresh-btn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        .file-upload:hover, .refresh-btn:hover {
+            background-color: #45a049;
+        }
+
+        .analysis-selector select {
+            padding: 10px;
+            background-color: #3a3a3a;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .widget {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .widget h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+            font-size: 1.3em;
+        }
+
+        .shot-chart-container {
+            grid-column: 1 / -1;
+            height: 500px;
+            position: relative;
+        }
+
+        .court {
+            width: 100%;
+            height: 100%;
+            background: #8B4513;
+            position: relative;
+            border: 3px solid #fff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .court-line {
+            position: absolute;
+            background-color: #fff;
+        }
+
+        .shot-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .shot-dot.made {
+            background-color: #4CAF50;
+        }
+
+        .shot-dot.missed {
+            background-color: #f44336;
+        }
+
+        .shot-dot:hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            z-index: 10;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            background-color: #3a3a3a;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            color: #ccc;
+            font-size: 0.9em;
+        }
+
+        .live-events {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 5px;
+            background-color: #3a3a3a;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .event-time {
+            color: #888;
+            font-size: 0.8em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #3a3a3a;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #4CAF50 100%);
+            transition: width 0.3s ease;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+
+        .error {
+            background-color: #ff5252;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .zone-chart {
+            display: flex;
+            justify-content: space-around;
+            align-items: end;
+            height: 200px;
+            padding: 20px;
+            background-color: #1a1a1a;
+            border-radius: 5px;
+        }
+
+        .zone-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
+        }
+
+        .bar-container {
+            height: 150px;
+            width: 60px;
+            background-color: #3a3a3a;
+            border-radius: 5px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .bar-attempts, .bar-makes {
+            position: absolute;
+            bottom: 0;
+            width: 50%;
+            border-radius: 3px;
+            transition: height 0.3s ease;
+        }
+
+        .bar-attempts {
+            left: 0;
+            background-color: #667eea;
+        }
+
+        .bar-makes {
+            right: 0;
+            background-color: #4CAF50;
+        }
+
+        .zone-label {
+            font-size: 0.8em;
+            color: #ccc;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>🏀 Basketball Analytics Dashboard</h1>
+            <p>Real-time basketball video analysis with shot charts and player statistics</p>
+        </div>
+
+        <div class="controls">
+            <input type="file" id="videoFile" accept="video/*" class="file-upload">
+            <button id="uploadBtn" class="file-upload">Upload & Analyze Video</button>
+            <div class="analysis-selector">
+                <select id="analysisSelect">
+                    <option value="">Select Analysis</option>
+                </select>
+            </div>
+            <button id="refreshBtn" class="refresh-btn">Refresh</button>
+        </div>
+
+        <div id="analysisStatus" class="widget" style="display:none;">
+            <h3>Analysis Progress</h3>
+            <div id="progressInfo">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <p id="progressText">Waiting...</p>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="widget">
+                <h3>📊 Game Statistics</h3>
+                <div id="gameStats" class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-value" id="totalShots">0</span>
+                        <span class="stat-label">Total Shots</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="shotsMade">0</span>
+                        <span class="stat-label">Shots Made</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="fgPercentage">0%</span>
+                        <span class="stat-label">FG%</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="activePlayers">0</span>
+                        <span class="stat-label">Players</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <h3>⚡ Live Events</h3>
+                <div id="liveEvents" class="live-events">
+                    <div class="loading">No analysis selected</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="widget shot-chart-container">
+            <h3>🎯 Interactive Shot Chart</h3>
+            <div id="shotChart" class="court">
+                <div class="loading">Select an analysis to view shot chart</div>
+            </div>
+        </div>
+
+        <div class="widget">
+            <h3>📈 Zone Performance</h3>
+            <div id="zoneChart" class="zone-chart">
+                <div class="zone-bar">
+                    <div class="bar-container">
+                        <div class="bar-attempts" id="paintAttempts" style="height: 0%"></div>
+                        <div class="bar-makes" id="paintMakes" style="height: 0%"></div>
+                    </div>
+                    <div class="zone-label">Paint</div>
+                </div>
+                <div class="zone-bar">
+                    <div class="bar-container">
+                        <div class="bar-attempts" id="midRangeAttempts" style="height: 0%"></div>
+                        <div class="bar-makes" id="midRangeMakes" style="height: 0%"></div>
+                    </div>
+                    <div class="zone-label">Mid-Range</div>
+                </div>
+                <div class="zone-bar">
+                    <div class="bar-container">
+                        <div class="bar-attempts" id="threePointAttempts" style="height: 0%"></div>
+                        <div class="bar-makes" id="threePointMakes" style="height: 0%"></div>
+                    </div>
+                    <div class="zone-label">3-Point</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentAnalysisId = null;
+        let refreshInterval = null;
+
+        // API base URL
+        const API_BASE = 'http://localhost:8000';
+
+        // Simple fetch implementation for HTTP requests
+        async function apiRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('API request error:', error);
+                throw error;
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            loadAnalysesList();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('uploadBtn').addEventListener('click', uploadVideo);
+            document.getElementById('refreshBtn').addEventListener('click', loadAnalysesList);
+            document.getElementById('analysisSelect').addEventListener('change', function(e) {
+                if (e.target.value) {
+                    selectAnalysis(e.target.value);
+                }
+            });
+        }
+
+        async function uploadVideo() {
+            const fileInput = document.getElementById('videoFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a video file first');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('confidence_threshold', '0.25');
+            formData.append('visualize', 'true');
+
+            try {
+                showStatus('Uploading video...', 0);
+                const response = await fetch(`${API_BASE}/analyze/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    currentAnalysisId = result.analysis_id;
+                    showStatus('Analysis started...', 10);
+                    startLiveUpdates();
+                    setTimeout(loadAnalysesList, 1000); // Refresh list
+                } else {
+                    showError('Upload failed: ' + result.message);
+                }
+            } catch (error) {
+                showError('Upload error: ' + error.message);
+            }
+        }
+
+        async function loadAnalysesList() {
+            try {
+                const data = await apiRequest(`${API_BASE}/analyze`);
+                const select = document.getElementById('analysisSelect');
+                
+                // Clear existing options (except first)
+                select.innerHTML = '<option value="">Select Analysis</option>';
+                
+                data.analyses.forEach(analysis => {
+                    const option = document.createElement('option');
+                    option.value = analysis.analysis_id;
+                    option.textContent = `${analysis.video_path.split('/').pop()} (${analysis.status})`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading analyses:', error);
+            }
+        }
+
+        async function selectAnalysis(analysisId) {
+            currentAnalysisId = analysisId;
+            await loadAnalysisData();
+            startLiveUpdates();
+        }
+
+        async function loadAnalysisData() {
+            if (!currentAnalysisId) return;
+
+            try {
+                // Load main analysis data
+                const analysis = await apiRequest(`${API_BASE}/analyze/${currentAnalysisId}`);
+
+                // Update game stats
+                updateGameStats(analysis);
+
+                // Load shot chart data
+                await loadShotChart();
+
+                // Load live data for events
+                await updateLiveData();
+
+                // Hide status if completed
+                if (analysis.status === 'completed') {
+                    hideStatus();
+                }
+
+            } catch (error) {
+                console.error('Error loading analysis:', error);
+                showError('Failed to load analysis data');
+            }
+        }
+
+        function updateGameStats(analysis) {
+            const stats = analysis.game_statistics || {};
+            
+            document.getElementById('totalShots').textContent = stats.total_shots || 0;
+            document.getElementById('shotsMade').textContent = stats.shots_made || 0;
+            
+            const fgPercentage = stats.total_shots > 0 ? 
+                Math.round((stats.shots_made / stats.total_shots) * 100) : 0;
+            document.getElementById('fgPercentage').textContent = fgPercentage + '%';
+            
+            document.getElementById('activePlayers').textContent = 
+                Object.keys(stats.player_stats || {}).length;
+        }
+
+        async function loadShotChart() {
+            if (!currentAnalysisId) return;
+
+            try {
+                const shotData = await apiRequest(`${API_BASE}/analyze/${currentAnalysisId}/shot-chart`);
+
+                renderShotChart(shotData);
+                updateZoneChart(shotData.zones);
+
+            } catch (error) {
+                console.error('Error loading shot chart:', error);
+            }
+        }
+
+        function renderShotChart(shotData) {
+            const courtElement = document.getElementById('shotChart');
+            courtElement.innerHTML = '';
+
+            // Draw court lines (simplified)
+            drawCourtLines(courtElement);
+
+            // Plot shots
+            shotData.shots.forEach(shot => {
+                const shotDot = document.createElement('div');
+                shotDot.className = `shot-dot ${shot.made ? 'made' : 'missed'}`;
+                
+                // Convert coordinates to percentage (assuming normalized coordinates)
+                const x = (shot.x / shotData.video_metadata.width) * 100;
+                const y = (shot.y / shotData.video_metadata.height) * 100;
+                
+                shotDot.style.left = x + '%';
+                shotDot.style.top = y + '%';
+                
+                shotDot.title = `${shot.made ? 'MADE' : 'MISSED'} - Zone: ${shot.zone} - Time: ${shot.timestamp.toFixed(1)}s`;
+                
+                courtElement.appendChild(shotDot);
+            });
+        }
+
+        function drawCourtLines(court) {
+            // Simplified court representation
+            // Center line
+            const centerLine = document.createElement('div');
+            centerLine.className = 'court-line';
+            centerLine.style.width = '2px';
+            centerLine.style.height = '100%';
+            centerLine.style.left = '50%';
+            centerLine.style.top = '0';
+            court.appendChild(centerLine);
+
+            // Three-point arc (simplified as rectangles)
+            const leftThreePoint = document.createElement('div');
+            leftThreePoint.className = 'court-line';
+            leftThreePoint.style.width = '2px';
+            leftThreePoint.style.height = '60%';
+            leftThreePoint.style.left = '25%';
+            leftThreePoint.style.top = '20%';
+            court.appendChild(leftThreePoint);
+
+            const rightThreePoint = document.createElement('div');
+            rightThreePoint.className = 'court-line';
+            rightThreePoint.style.width = '2px';
+            rightThreePoint.style.height = '60%';
+            rightThreePoint.style.left = '75%';
+            rightThreePoint.style.top = '20%';
+            court.appendChild(rightThreePoint);
+        }
+
+        function updateZoneChart(zones) {
+            const maxAttempts = Math.max(
+                zones.paint?.attempts || 0,
+                zones.mid_range?.attempts || 0,
+                zones.three_point?.attempts || 0,
+                1 // Avoid division by zero
+            );
+
+            // Paint
+            const paintAttempts = zones.paint?.attempts || 0;
+            const paintMakes = zones.paint?.makes || 0;
+            document.getElementById('paintAttempts').style.height = (paintAttempts / maxAttempts * 100) + '%';
+            document.getElementById('paintMakes').style.height = (paintMakes / maxAttempts * 100) + '%';
+
+            // Mid-range
+            const midRangeAttempts = zones.mid_range?.attempts || 0;
+            const midRangeMakes = zones.mid_range?.makes || 0;
+            document.getElementById('midRangeAttempts').style.height = (midRangeAttempts / maxAttempts * 100) + '%';
+            document.getElementById('midRangeMakes').style.height = (midRangeMakes / maxAttempts * 100) + '%';
+
+            // Three-point
+            const threePointAttempts = zones.three_point?.attempts || 0;
+            const threePointMakes = zones.three_point?.makes || 0;
+            document.getElementById('threePointAttempts').style.height = (threePointAttempts / maxAttempts * 100) + '%';
+            document.getElementById('threePointMakes').style.height = (threePointMakes / maxAttempts * 100) + '%';
+        }
+
+        async function updateLiveData() {
+            if (!currentAnalysisId) return;
+
+            try {
+                const liveData = await apiRequest(`${API_BASE}/analyze/${currentAnalysisId}/live-data`);
+
+                // Update progress
+                if (liveData.progress) {
+                    showStatus(`Processing: ${liveData.progress.frames_processed}/${liveData.progress.total_frames} frames`, 
+                              liveData.progress.percentage);
+                }
+
+                // Update live events
+                updateLiveEvents(liveData.recent_events);
+
+                // Update current stats
+                const stats = liveData.current_stats;
+                document.getElementById('totalShots').textContent = stats.total_shots;
+                document.getElementById('shotsMade').textContent = stats.shots_made;
+                
+                const fgPercentage = stats.total_shots > 0 ? 
+                    Math.round((stats.shots_made / stats.total_shots) * 100) : 0;
+                document.getElementById('fgPercentage').textContent = fgPercentage + '%';
+                
+                document.getElementById('activePlayers').textContent = stats.active_players;
+
+            } catch (error) {
+                console.error('Error updating live data:', error);
+            }
+        }
+
+        function updateLiveEvents(events) {
+            const eventsContainer = document.getElementById('liveEvents');
+            eventsContainer.innerHTML = '';
+
+            if (events.length === 0) {
+                eventsContainer.innerHTML = '<div class="loading">No events yet</div>';
+                return;
+            }
+
+            events.forEach(event => {
+                const eventItem = document.createElement('div');
+                eventItem.className = 'event-item';
+                
+                const eventDesc = `${event.made ? '✅' : '❌'} Shot by Player ${event.player_id} (${event.zone})`;
+                const eventTime = `${event.timestamp.toFixed(1)}s`;
+                
+                eventItem.innerHTML = `
+                    <span>${eventDesc}</span>
+                    <span class="event-time">${eventTime}</span>
+                `;
+                
+                eventsContainer.appendChild(eventItem);
+            });
+        }
+
+        function startLiveUpdates() {
+            // Clear existing interval
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+
+            // Start new interval for live updates
+            refreshInterval = setInterval(async () => {
+                if (currentAnalysisId) {
+                    await updateLiveData();
+                    
+                    // Check if analysis is completed
+                    const analysis = await apiRequest(`${API_BASE}/analyze/${currentAnalysisId}`);
+                    if (analysis.status === 'completed') {
+                        await loadAnalysisData(); // Full reload
+                        clearInterval(refreshInterval);
+                        refreshInterval = null;
+                    }
+                }
+            }, 2000); // Update every 2 seconds
+        }
+
+        function showStatus(message, percentage) {
+            const statusElement = document.getElementById('analysisStatus');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            statusElement.style.display = 'block';
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = message;
+        }
+
+        function hideStatus() {
+            document.getElementById('analysisStatus').style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            
+            document.querySelector('.dashboard').insertBefore(errorDiv, document.querySelector('.controls').nextSibling);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+
+        .file-upload, .refresh-btn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        .file-upload:hover, .refresh-btn:hover {
+            background-color: #45a049;
+        }
+
+        .analysis-selector select {
+            padding: 10px;
+            background-color: #3a3a3a;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .widget {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .widget h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+            font-size: 1.3em;
+        }
+
+        .shot-chart-container {
+            grid-column: 1 / -1;
+            height: 500px;
+            position: relative;
+        }
+
+        .court {
+            width: 100%;
+            height: 100%;
+            background: #8B4513;
+            position: relative;
+            border: 3px solid #fff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .court-line {
+            position: absolute;
+            background-color: #fff;
+        }
+
+        .shot-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .shot-dot.made {
+            background-color: #4CAF50;
+        }
+
+        .shot-dot.missed {
+            background-color: #f44336;
+        }
+
+        .shot-dot:hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            z-index: 10;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            background-color: #3a3a3a;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            color: #ccc;
+            font-size: 0.9em;
+        }
+
+        .live-events {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 5px;
+            background-color: #3a3a3a;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .event-time {
+            color: #888;
+            font-size: 0.8em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #3a3a3a;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #4CAF50 100%);
+            transition: width 0.3s ease;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+
+        .error {
+            background-color: #ff5252;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>🏀 Basketball Analytics Dashboard</h1>
+            <p>Real-time basketball video analysis with shot charts and player statistics</p>
+        </div>
+
+        <div class="controls">
+            <input type="file" id="videoFile" accept="video/*" class="file-upload">
+            <button id="uploadBtn" class="file-upload">Upload & Analyze Video</button>
+            <div class="analysis-selector">
+                <select id="analysisSelect">
+                    <option value="">Select Analysis</option>
+                </select>
+            </div>
+            <button id="refreshBtn" class="refresh-btn">Refresh</button>
+        </div>
+
+        <div id="analysisStatus" class="widget" style="display:none;">
+            <h3>Analysis Progress</h3>
+            <div id="progressInfo">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <p id="progressText">Waiting...</p>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="widget">
+                <h3>📊 Game Statistics</h3>
+                <div id="gameStats" class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-value" id="totalShots">0</span>
+                        <span class="stat-label">Total Shots</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="shotsMade">0</span>
+                        <span class="stat-label">Shots Made</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="fgPercentage">0%</span>
+                        <span class="stat-label">FG%</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="activePlayers">0</span>
+                        <span class="stat-label">Players</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <h3>⚡ Live Events</h3>
+                <div id="liveEvents" class="live-events">
+                    <div class="loading">No analysis selected</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="widget shot-chart-container">
+            <h3>🎯 Interactive Shot Chart</h3>
+            <div id="shotChart" class="court">
+                <div class="loading">Select an analysis to view shot chart</div>
+            </div>
+        </div>
+
+        <div class="widget">
+            <h3>📈 Zone Performance</h3>
+            <canvas id="zoneChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentAnalysisId = null;
+        let refreshInterval = null;
+        let zoneChart = null;
+
+        // API base URL
+        const API_BASE = 'http://localhost:8000';
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            loadAnalysesList();
+            initializeZoneChart();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('uploadBtn').addEventListener('click', uploadVideo);
+            document.getElementById('refreshBtn').addEventListener('click', loadAnalysesList);
+            document.getElementById('analysisSelect').addEventListener('change', function(e) {
+                if (e.target.value) {
+                    selectAnalysis(e.target.value);
+                }
+            });
+        }
+
+        async function uploadVideo() {
+            const fileInput = document.getElementById('videoFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a video file first');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('confidence_threshold', '0.25');
+            formData.append('visualize', 'true');
+
+            try {
+                showStatus('Uploading video...', 0);
+                const response = await axios.post(`${API_BASE}/analyze/upload`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                if (response.data.success) {
+                    currentAnalysisId = response.data.analysis_id;
+                    showStatus('Analysis started...', 10);
+                    startLiveUpdates();
+                    setTimeout(loadAnalysesList, 1000); // Refresh list
+                } else {
+                    showError('Upload failed: ' + response.data.message);
+                }
+            } catch (error) {
+                showError('Upload error: ' + error.message);
+            }
+        }
+
+        async function loadAnalysesList() {
+            try {
+                const response = await axios.get(`${API_BASE}/analyze`);
+                const select = document.getElementById('analysisSelect');
+                
+                // Clear existing options (except first)
+                select.innerHTML = '<option value="">Select Analysis</option>';
+                
+                response.data.analyses.forEach(analysis => {
+                    const option = document.createElement('option');
+                    option.value = analysis.analysis_id;
+                    option.textContent = `${analysis.video_path.split('/').pop()} (${analysis.status})`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading analyses:', error);
+            }
+        }
+
+        async function selectAnalysis(analysisId) {
+            currentAnalysisId = analysisId;
+            await loadAnalysisData();
+            startLiveUpdates();
+        }
+
+        async function loadAnalysisData() {
+            if (!currentAnalysisId) return;
+
+            try {
+                // Load main analysis data
+                const response = await axios.get(`${API_BASE}/analyze/${currentAnalysisId}`);
+                const analysis = response.data;
+
+                // Update game stats
+                updateGameStats(analysis);
+
+                // Load shot chart data
+                await loadShotChart();
+
+                // Load live data for events
+                await updateLiveData();
+
+                // Hide status if completed
+                if (analysis.status === 'completed') {
+                    hideStatus();
+                }
+
+            } catch (error) {
+                console.error('Error loading analysis:', error);
+                showError('Failed to load analysis data');
+            }
+        }
+
+        function updateGameStats(analysis) {
+            const stats = analysis.game_statistics || {};
+            
+            document.getElementById('totalShots').textContent = stats.total_shots || 0;
+            document.getElementById('shotsMade').textContent = stats.shots_made || 0;
+            
+            const fgPercentage = stats.total_shots > 0 ? 
+                Math.round((stats.shots_made / stats.total_shots) * 100) : 0;
+            document.getElementById('fgPercentage').textContent = fgPercentage + '%';
+            
+            document.getElementById('activePlayers').textContent = 
+                Object.keys(stats.player_stats || {}).length;
+        }
+
+        async function loadShotChart() {
+            if (!currentAnalysisId) return;
+
+            try {
+                const response = await axios.get(`${API_BASE}/analyze/${currentAnalysisId}/shot-chart`);
+                const shotData = response.data;
+
+                renderShotChart(shotData);
+                updateZoneChart(shotData.zones);
+
+            } catch (error) {
+                console.error('Error loading shot chart:', error);
+            }
+        }
+
+        function renderShotChart(shotData) {
+            const courtElement = document.getElementById('shotChart');
+            courtElement.innerHTML = '';
+
+            // Draw court lines (simplified)
+            drawCourtLines(courtElement);
+
+            // Plot shots
+            shotData.shots.forEach(shot => {
+                const shotDot = document.createElement('div');
+                shotDot.className = `shot-dot ${shot.made ? 'made' : 'missed'}`;
+                
+                // Convert coordinates to percentage (assuming normalized coordinates)
+                const x = (shot.x / shotData.video_metadata.width) * 100;
+                const y = (shot.y / shotData.video_metadata.height) * 100;
+                
+                shotDot.style.left = x + '%';
+                shotDot.style.top = y + '%';
+                
+                shotDot.title = `${shot.made ? 'MADE' : 'MISSED'} - Zone: ${shot.zone} - Time: ${shot.timestamp.toFixed(1)}s`;
+                
+                courtElement.appendChild(shotDot);
+            });
+        }
+
+        function drawCourtLines(court) {
+            // Simplified court representation
+            // Center line
+            const centerLine = document.createElement('div');
+            centerLine.className = 'court-line';
+            centerLine.style.width = '2px';
+            centerLine.style.height = '100%';
+            centerLine.style.left = '50%';
+            centerLine.style.top = '0';
+            court.appendChild(centerLine);
+
+            // Three-point arc (simplified as rectangles)
+            const leftThreePoint = document.createElement('div');
+            leftThreePoint.className = 'court-line';
+            leftThreePoint.style.width = '2px';
+            leftThreePoint.style.height = '60%';
+            leftThreePoint.style.left = '25%';
+            leftThreePoint.style.top = '20%';
+            court.appendChild(leftThreePoint);
+
+            const rightThreePoint = document.createElement('div');
+            rightThreePoint.className = 'court-line';
+            rightThreePoint.style.width = '2px';
+            rightThreePoint.style.height = '60%';
+            rightThreePoint.style.left = '75%';
+            rightThreePoint.style.top = '20%';
+            court.appendChild(rightThreePoint);
+        }
+
+        function initializeZoneChart() {
+            const ctx = document.getElementById('zoneChart').getContext('2d');
+            zoneChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Paint', 'Mid-Range', '3-Point'],
+                    datasets: [{
+                        label: 'Attempts',
+                        data: [0, 0, 0],
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Makes',
+                        data: [0, 0, 0],
+                        backgroundColor: 'rgba(76, 175, 80, 0.8)',
+                        borderColor: 'rgba(76, 175, 80, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#ffffff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#ffffff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateZoneChart(zones) {
+            if (!zoneChart) return;
+
+            const attempts = [
+                zones.paint?.attempts || 0,
+                zones.mid_range?.attempts || 0,
+                zones.three_point?.attempts || 0
+            ];
+
+            const makes = [
+                zones.paint?.makes || 0,
+                zones.mid_range?.makes || 0,
+                zones.three_point?.makes || 0
+            ];
+
+            zoneChart.data.datasets[0].data = attempts;
+            zoneChart.data.datasets[1].data = makes;
+            zoneChart.update();
+        }
+
+        async function updateLiveData() {
+            if (!currentAnalysisId) return;
+
+            try {
+                const response = await axios.get(`${API_BASE}/analyze/${currentAnalysisId}/live-data`);
+                const liveData = response.data;
+
+                // Update progress
+                if (liveData.progress) {
+                    showStatus(`Processing: ${liveData.progress.frames_processed}/${liveData.progress.total_frames} frames`, 
+                              liveData.progress.percentage);
+                }
+
+                // Update live events
+                updateLiveEvents(liveData.recent_events);
+
+                // Update current stats
+                const stats = liveData.current_stats;
+                document.getElementById('totalShots').textContent = stats.total_shots;
+                document.getElementById('shotsMade').textContent = stats.shots_made;
+                
+                const fgPercentage = stats.total_shots > 0 ? 
+                    Math.round((stats.shots_made / stats.total_shots) * 100) : 0;
+                document.getElementById('fgPercentage').textContent = fgPercentage + '%';
+                
+                document.getElementById('activePlayers').textContent = stats.active_players;
+
+            } catch (error) {
+                console.error('Error updating live data:', error);
+            }
+        }
+
+        function updateLiveEvents(events) {
+            const eventsContainer = document.getElementById('liveEvents');
+            eventsContainer.innerHTML = '';
+
+            if (events.length === 0) {
+                eventsContainer.innerHTML = '<div class="loading">No events yet</div>';
+                return;
+            }
+
+            events.forEach(event => {
+                const eventItem = document.createElement('div');
+                eventItem.className = 'event-item';
+                
+                const eventDesc = `${event.made ? '✅' : '❌'} Shot by Player ${event.player_id} (${event.zone})`;
+                const eventTime = `${event.timestamp.toFixed(1)}s`;
+                
+                eventItem.innerHTML = `
+                    <span>${eventDesc}</span>
+                    <span class="event-time">${eventTime}</span>
+                `;
+                
+                eventsContainer.appendChild(eventItem);
+            });
+        }
+
+        function startLiveUpdates() {
+            // Clear existing interval
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+
+            // Start new interval for live updates
+            refreshInterval = setInterval(async () => {
+                if (currentAnalysisId) {
+                    await updateLiveData();
+                    
+                    // Check if analysis is completed
+                    const response = await axios.get(`${API_BASE}/analyze/${currentAnalysisId}`);
+                    if (response.data.status === 'completed') {
+                        await loadAnalysisData(); // Full reload
+                        clearInterval(refreshInterval);
+                        refreshInterval = null;
+                    }
+                }
+            }, 2000); // Update every 2 seconds
+        }
+
+        function showStatus(message, percentage) {
+            const statusElement = document.getElementById('analysisStatus');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            statusElement.style.display = 'block';
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = message;
+        }
+
+        function hideStatus() {
+            document.getElementById('analysisStatus').style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            
+            document.querySelector('.dashboard').insertBefore(errorDiv, document.querySelector('.controls').nextSibling);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
