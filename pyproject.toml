@@ -19,6 +19,9 @@ ultralytics = "*"
 deep-sort-realtime = "*"
 numpy = "*"
 python-multipart = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
+alembic = "*"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "*"
@@ -28,6 +31,7 @@ pytest = "*"
 pytest-asyncio = "*"
 pre-commit = "*"
 detect-secrets = "*"
+httpx = "*"
 
 [build-system]
 requires = ["poetry-core"]

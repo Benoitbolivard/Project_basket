@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks, File, UploadFile
+from fastapi import FastAPI, HTTPException, BackgroundTasks, File, UploadFile, Depends
 from fastapi.responses import JSONResponse, FileResponse
+from sqlalchemy.orm import Session
 from pathlib import Path
 import tempfile
 import uuid
@@ -18,12 +19,18 @@ from .models import (
     LiveAnalysisConfig,
     CurrentStats
 )
+from .database import get_db, create_tables
+from . import crud
 
 app = FastAPI(title="Basketball Analytics API", version="1.0.0")
 
+# Create tables on startup
+@app.on_event("startup")
+async def startup_event():
+    create_tables()
+
 # Global processor instance
 processor = None
-analysis_cache: Dict[str, Dict[str, Any]] = {}
 
 def get_processor():
     """Get or create basketball processor instance."""
@@ -37,14 +44,26 @@ async def read_root():
     return {"message": "Basketball Analytics API", "version": "1.0.0"}
 
 @app.get("/health")
-async def health_check():
+async def health_check(db: Session = Depends(get_db)):
     """Health check endpoint."""
-    return {"status": "healthy", "processor_ready": processor is not None}
+    try:
+        # Test database connection
+        db.execute("SELECT 1")
+        db_status = "healthy"
+    except Exception:
+        db_status = "unhealthy"
+    
+    return {
+        "status": "healthy", 
+        "processor_ready": processor is not None,
+        "database_status": db_status
+    }
 
 @app.post("/analyze/video", response_model=AnalysisResponse)
 async def analyze_video(
     background_tasks: BackgroundTasks,
-    request: AnalysisRequest
+    request: AnalysisRequest,
+    db: Session = Depends(get_db)
 ):
     """
     Analyze a basketball video file.
@@ -79,11 +98,10 @@ async def analyze_video(
             save_frames=request.save_frames
         )
         
-        # Cache results
-        analysis_cache[analysis_id] = results
-        
-        # Convert to response model
+        # Convert to response model and save to database
         video_analysis = VideoAnalysisResult(**results)
+        db_analysis = crud.create_video_analysis(db, video_analysis)
+        analysis_id = str(db_analysis.id)
         
         return AnalysisResponse(
             success=True,
@@ -105,7 +123,8 @@ async def analyze_uploaded_video(
     file: UploadFile = File(...),
     confidence_threshold: float = 0.25,
     visualize: bool = True,
-    save_frames: bool = False
+    save_frames: bool = False,
+    db: Session = Depends(get_db)
 ):
     """
     Upload and analyze a basketball video file.
@@ -135,7 +154,7 @@ async def analyze_uploaded_video(
         )
         
         # Analyze video
-        response = await analyze_video(background_tasks, request)
+        response = await analyze_video(background_tasks, request, db)
         
         # Schedule cleanup
         background_tasks.add_task(cleanup_temp_file, temp_video_path)
@@ -150,7 +169,7 @@ async def analyze_uploaded_video(
         )
 
 @app.get("/analyze/{analysis_id}")
-async def get_analysis_results(analysis_id: str):
+async def get_analysis_results(analysis_id: str, db: Session = Depends(get_db)):
     """
     Get analysis results by ID.
     
@@ -160,13 +179,14 @@ async def get_analysis_results(analysis_id: str):
     Returns:
         Analysis results
     """
-    if analysis_id not in analysis_cache:
+    db_analysis = crud.get_video_analysis(db, analysis_id)
+    if not db_analysis:
         raise HTTPException(status_code=404, detail="Analysis not found")
     
-    return analysis_cache[analysis_id]
+    return crud.db_analysis_to_dict(db_analysis)
 
 @app.get("/analyze/{analysis_id}/download")
-async def download_analysis_json(analysis_id: str):
+async def download_analysis_json(analysis_id: str, db: Session = Depends(get_db)):
     """
     Download analysis results as JSON file.
     
@@ -176,13 +196,17 @@ async def download_analysis_json(analysis_id: str):
     Returns:
         JSON file download
     """
-    if analysis_id not in analysis_cache:
+    db_analysis = crud.get_video_analysis(db, analysis_id)
+    if not db_analysis:
         raise HTTPException(status_code=404, detail="Analysis not found")
+    
+    # Get analysis data as dictionary
+    analysis_data = crud.db_analysis_to_dict(db_analysis)
     
     # Create temporary JSON file
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as temp_file:
         import json
-        json.dump(analysis_cache[analysis_id], temp_file, indent=2, default=str)
+        json.dump(analysis_data, temp_file, indent=2, default=str)
         temp_json_path = temp_file.name
     
     return FileResponse(
@@ -234,9 +258,9 @@ async def get_current_stats():
     return CurrentStats(**stats)
 
 @app.delete("/analyze/{analysis_id}")
-async def delete_analysis(analysis_id: str):
+async def delete_analysis(analysis_id: str, db: Session = Depends(get_db)):
     """
-    Delete analysis results from cache.
+    Delete analysis results from database.
     
     Args:
         analysis_id: Analysis ID
@@ -244,28 +268,30 @@ async def delete_analysis(analysis_id: str):
     Returns:
         Success status
     """
-    if analysis_id in analysis_cache:
-        del analysis_cache[analysis_id]
+    if crud.delete_video_analysis(db, analysis_id):
         return {"message": "Analysis deleted", "success": True}
     else:
         raise HTTPException(status_code=404, detail="Analysis not found")
 
 @app.get("/analyze")
-async def list_analyses():
+async def list_analyses(db: Session = Depends(get_db)):
     """
-    List all cached analyses.
+    List all analyses.
     
     Returns:
         List of analysis IDs and basic info
     """
+    db_analyses = crud.get_video_analyses(db)
     analyses = []
-    for analysis_id, results in analysis_cache.items():
+    
+    for db_analysis in db_analyses:
         summary = {
-            "analysis_id": analysis_id,
-            "video_path": results.get('video_metadata', {}).get('video_path', 'unknown'),
-            "duration": results.get('video_metadata', {}).get('duration_seconds', 0),
-            "total_frames": results.get('processing_summary', {}).get('total_frames_processed', 0),
-            "players_tracked": results.get('processing_summary', {}).get('unique_players_tracked', 0)
+            "analysis_id": str(db_analysis.id),
+            "video_path": db_analysis.video_path,
+            "duration": db_analysis.video_duration_seconds,
+            "total_frames": db_analysis.total_frames_processed,
+            "players_tracked": db_analysis.unique_players_tracked,
+            "created_at": db_analysis.created_at.isoformat() if db_analysis.created_at else None
         }
         analyses.append(summary)
     

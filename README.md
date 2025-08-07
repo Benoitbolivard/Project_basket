@@ -35,6 +35,28 @@ A comprehensive basketball video analysis platform using computer vision and mac
 - Possession history and analytics
 - Complete game statistics
 
+## Phase 2 - Backend & Database ✅
+
+### Features Completed
+
+#### 🗄️ PostgreSQL Database Integration
+- **Persistent Storage**: Replace in-memory cache with PostgreSQL database
+- **Database Schema**: Comprehensive schema for video analyses, shot attempts, possession events, and player statistics
+- **Database Migrations**: Alembic-based migration system for schema management
+- **CRUD Operations**: Full Create, Read, Update, Delete operations for all data entities
+
+#### 🚀 Enhanced REST API
+- **Database-backed Endpoints**: All existing API endpoints now use persistent database storage
+- **Backward Compatibility**: Maintained API compatibility while adding database persistence
+- **Health Checks**: Enhanced health endpoint with database status monitoring
+- **UUID-based IDs**: Robust UUID-based analysis identifiers for better scalability
+
+#### 🔧 Development & Deployment Tools
+- **Docker Compose**: Complete development environment with PostgreSQL
+- **SQLite Testing**: Lightweight SQLite database for development and testing
+- **Database Documentation**: Comprehensive database schema and setup documentation
+- **Migration System**: Production-ready database migration workflow
+
 ### Technical Implementation
 
 #### Core Components
@@ -72,13 +94,15 @@ A comprehensive basketball video analysis platform using computer vision and mac
 ### API Endpoints
 
 ```
-POST /analyze/video        - Analyze local video file
-POST /analyze/upload       - Upload and analyze video
-GET  /analyze/{id}         - Get analysis results by ID
-GET  /analyze/{id}/download - Download JSON results
+POST /analyze/video        - Analyze local video file (now with database storage)
+POST /analyze/upload       - Upload and analyze video (now with database storage)
+GET  /analyze/{id}         - Get analysis results by ID (from database)
+GET  /analyze/{id}/download - Download JSON results (from database)
+GET  /analyze              - List all stored analyses (from database)
+DELETE /analyze/{id}       - Delete analysis from database
 GET  /stats/current        - Get current processing statistics
 POST /analyze/live         - Start live camera analysis
-GET  /health              - API health check
+GET  /health              - API health check (includes database status)
 ```
 
 ### Data Models
@@ -98,11 +122,21 @@ poetry install
 
 # Run tests
 poetry run python tests/test_basketball_vision.py
+poetry run python tests/test_database.py
+poetry run python tests/test_api_database.py
 
 # Run demo
 poetry run python demo.py
 
-# Start API server
+# Development: Start API server with SQLite
+./scripts/start_api.sh
+
+# Production: Start with PostgreSQL using Docker
+docker-compose up
+
+# Production: Start API server manually
+export DATABASE_URL=postgresql://user:password@localhost:5432/basketball_analytics
+poetry run alembic upgrade head
 poetry run uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
 ```
 
@@ -142,7 +176,6 @@ Project_basket/
 
 ## Next Phases
 
-- **Phase 2**: Backend & Database (Postgres, REST API)
 - **Phase 3**: Frontend (Interactive shot charts, live dashboard)
 
 ## Technology Stack
@@ -150,5 +183,7 @@ Project_basket/
 - **Computer Vision**: OpenCV, Ultralytics YOLO
 - **Tracking**: DeepSORT
 - **Backend**: FastAPI, Pydantic
+- **Database**: PostgreSQL, SQLAlchemy, Alembic
 - **Data Processing**: NumPy
 - **Package Management**: Poetry
+- **Deployment**: Docker, Docker Compose
