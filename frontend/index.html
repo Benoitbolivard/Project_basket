@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Analytics Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/api.js"></script>
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-container">
+            <h1 class="navbar-title">🏀 Basketball Analytics</h1>
+            <nav class="navbar-nav">
+                <a href="index.html" class="nav-link active">Dashboard</a>
+                <a href="shot-chart.html" class="nav-link">Shot Chart</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-label">API Status:</span>
+                <span id="api-status" class="status-value">Checking...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Last Update:</span>
+                <span id="last-update" class="status-value">Never</span>
+            </div>
+        </div>
+
+        <!-- Video Upload Section -->
+        <section class="upload-section">
+            <div class="card">
+                <h2>Upload Video for Analysis</h2>
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-content">
+                        <div class="upload-icon">📁</div>
+                        <p>Drop your basketball video here or click to browse</p>
+                        <input type="file" id="video-file" accept="video/*" hidden>
+                        <button type="button" class="btn btn-primary" onclick="document.getElementById('video-file').click()">
+                            Select Video
+                        </button>
+                    </div>
+                    <div class="upload-progress" id="upload-progress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <p id="upload-status">Uploading...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Current Analysis -->
+        <section class="current-analysis" id="current-analysis" style="display: none;">
+            <div class="card">
+                <h2>Current Analysis</h2>
+                <div class="analysis-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-shots">0</div>
+                        <div class="stat-label">Total Shots</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="players-tracked">0</div>
+                        <div class="stat-label">Players Tracked</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="possession-changes">0</div>
+                        <div class="stat-label">Possession Changes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="game-duration">0:00</div>
+                        <div class="stat-label">Game Duration</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analysis History -->
+        <section class="analysis-history">
+            <div class="card">
+                <h2>Analysis History</h2>
+                <div class="history-controls">
+                    <button class="btn btn-secondary" onclick="refreshAnalyses()">🔄 Refresh</button>
+                </div>
+                <div class="analysis-list" id="analysis-list">
+                    <p class="empty-state">No analyses available. Upload a video to get started!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Stats Section -->
+        <section class="live-stats" id="live-stats" style="display: none;">
+            <div class="card">
+                <h2>Live Statistics</h2>
+                <div class="stats-grid">
+                    <div class="chart-container">
+                        <div id="shot-accuracy-chart"></div>
+                    </div>
+                    <div class="chart-container">
+                        <div id="possession-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

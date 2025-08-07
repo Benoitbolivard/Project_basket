@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Shot Chart - Basketball Analytics</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/api.js"></script>
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-container">
+            <h1 class="navbar-title">🏀 Basketball Analytics</h1>
+            <nav class="navbar-nav">
+                <a href="index.html" class="nav-link">Dashboard</a>
+                <a href="shot-chart.html" class="nav-link active">Shot Chart</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Controls -->
+        <section class="shot-chart-controls">
+            <div class="card">
+                <h2>Shot Chart Filters</h2>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="analysis-select">Analysis:</label>
+                        <select id="analysis-select" class="form-control">
+                            <option value="">Select an analysis</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="player-filter">Player:</label>
+                        <select id="player-filter" class="form-control">
+                            <option value="all">All Players</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="shot-type-filter">Shot Type:</label>
+                        <select id="shot-type-filter" class="form-control">
+                            <option value="all">All Shots</option>
+                            <option value="made">Made Shots</option>
+                            <option value="missed">Missed Shots</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="zone-filter">Zone:</label>
+                        <select id="zone-filter" class="form-control">
+                            <option value="all">All Zones</option>
+                            <option value="paint">Paint</option>
+                            <option value="three_point">Three Point</option>
+                            <option value="mid_range">Mid Range</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Shot Chart Display -->
+        <section class="shot-chart-display">
+            <div class="card">
+                <h2>Interactive Shot Chart</h2>
+                <div class="chart-info" id="chart-info">
+                    <p>Select an analysis to view shot chart</p>
+                </div>
+                <div class="shot-chart-container">
+                    <canvas id="shot-chart-canvas" width="600" height="400"></canvas>
+                    <div class="court-legend">
+                        <div class="legend-item">
+                            <div class="legend-dot made"></div>
+                            <span>Made Shot</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot missed"></div>
+                            <span>Missed Shot</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot selected"></div>
+                            <span>Selected Shot</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Shot Details -->
+        <section class="shot-details" id="shot-details" style="display: none;">
+            <div class="card">
+                <h2>Shot Details</h2>
+                <div id="shot-details-content">
+                    <!-- Shot details will be populated here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Zone Statistics -->
+        <section class="zone-stats">
+            <div class="card">
+                <h2>Zone Statistics</h2>
+                <div class="zone-stats-grid" id="zone-stats-grid">
+                    <p class="empty-state">Select an analysis to view zone statistics</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Shot Details Modal -->
+    <div id="shot-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Shot Details</h3>
+                <button class="modal-close" onclick="closeShotModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="shot-modal-body">
+                <!-- Modal content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/shot-chart.js"></script>
+</body>
+</html>
