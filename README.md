@@ -2,6 +2,8 @@
 
 A comprehensive basketball video analysis platform using computer vision and machine learning to provide advanced analytics for basketball games.
 
+![Basketball Analytics Dashboard](https://github.com/user-attachments/assets/e6a15a85-17e2-4a73-9796-91f70a1166c6)
+
 ## Phase 1 - Vision de base ✅
 
 ### Features Completed
@@ -35,6 +37,104 @@ A comprehensive basketball video analysis platform using computer vision and mac
 - Possession history and analytics
 - Complete game statistics
 
+## Phase 2 - Backend & Database ✅
+
+### 🗄️ PostgreSQL Database Integration
+- **SQLAlchemy ORM** with comprehensive data models
+- **Alembic migrations** for database schema management
+- **Persistent storage** for all analysis results
+- **Structured data models** for analyses, players, shots, possessions, and frame data
+- **CRUD operations** with efficient querying
+- **Automatic fallback** to SQLite for development environments
+
+### 🚀 Enhanced REST API
+- **Asynchronous processing** for video analysis
+- **Background task management** for long-running operations
+- **Progress tracking** and status updates
+- **Comprehensive endpoints** for data retrieval and management
+- **CORS support** for frontend integration
+- **Static file serving** for the dashboard
+
+### Database Schema
+
+```sql
+-- Main analysis sessions
+analyses (id, video_path, status, metadata, statistics)
+
+-- Player performance data  
+players (analysis_id, track_id, statistics, time_in_zones)
+
+-- Shot attempts and outcomes
+shots (analysis_id, timestamp, position, zone, made, trajectory)
+
+-- Ball possession events
+possessions (analysis_id, timestamp, player_id, duration)
+
+-- Frame-by-frame analysis data
+frame_data (analysis_id, frame_id, detections, tracking_data)
+```
+
+### API Endpoints
+
+```
+POST /analyze/video        - Analyze local video file
+POST /analyze/upload       - Upload and analyze video  
+GET  /analyze              - List all analyses
+GET  /analyze/{id}         - Get analysis results by ID
+GET  /analyze/{id}/download - Download JSON results
+GET  /analyze/{id}/shot-chart - Get shot chart data
+GET  /analyze/{id}/live-data - Get live analysis updates
+DELETE /analyze/{id}       - Delete analysis
+POST /analyze/live         - Start live camera analysis
+GET  /health              - API health check
+GET  /dashboard            - Basketball analytics dashboard
+```
+
+## Phase 3 - Frontend ✅
+
+### 🎯 Interactive Shot Chart
+- **Real-time shot visualization** on basketball court representation
+- **Color-coded shots** (green for made, red for missed)
+- **Hover tooltips** with detailed shot information
+- **Zone-based analysis** with court overlay
+- **Responsive design** for all screen sizes
+
+### 📈 Live Dashboard
+- **Real-time statistics** display with auto-refresh
+- **Progress tracking** for ongoing analysis
+- **Live event feed** showing recent shots and plays
+- **Zone performance charts** with visual bar graphs
+- **Game statistics overview** (FG%, total shots, active players)
+
+### 🔄 Real-time Updates
+- **Automatic polling** for analysis progress
+- **Background processing** status updates
+- **Live event streaming** as analysis progresses
+- **Dynamic chart updates** without page refresh
+
+### Frontend Features
+
+#### 📊 Game Statistics Widget
+- Total shots, shots made, field goal percentage
+- Active player count
+- Real-time updates during analysis
+
+#### ⚡ Live Events Feed
+- Recent shots with player IDs and outcomes
+- Timestamps and zone information
+- Scrollable event history
+
+#### 🎯 Interactive Shot Chart
+- Basketball court visualization
+- Shot dots positioned by actual coordinates
+- Made/missed color coding
+- Hover information with shot details
+
+#### 📈 Zone Performance Chart
+- Paint, mid-range, and 3-point zone statistics
+- Attempts vs makes visualization
+- Dynamic scaling based on data
+
 ### Technical Implementation
 
 #### Core Components
@@ -65,21 +165,22 @@ A comprehensive basketball video analysis platform using computer vision and mac
 
 5. **FastAPI Backend** (`backend/app/main.py`)
    - RESTful API for video analysis
-   - File upload and processing endpoints
+   - Database integration with SQLAlchemy
+   - Background task processing
    - Real-time analysis status
-   - JSON result download
+   - Frontend static file serving
 
-### API Endpoints
+6. **Database Models** (`backend/app/db_models.py`)
+   - Analysis sessions and metadata
+   - Player statistics and performance
+   - Shot attempts and trajectories
+   - Possession events and frame data
 
-```
-POST /analyze/video        - Analyze local video file
-POST /analyze/upload       - Upload and analyze video
-GET  /analyze/{id}         - Get analysis results by ID
-GET  /analyze/{id}/download - Download JSON results
-GET  /stats/current        - Get current processing statistics
-POST /analyze/live         - Start live camera analysis
-GET  /health              - API health check
-```
+7. **Interactive Dashboard** (`frontend/index.html`)
+   - Real-time basketball analytics interface
+   - Shot chart visualization
+   - Live statistics and event feeds
+   - Responsive design with modern UI
 
 ### Data Models
 
@@ -94,25 +195,59 @@ All API interactions use comprehensive Pydantic models for type safety:
 
 ```bash
 # Install dependencies
-poetry install
+pip install fastapi uvicorn pydantic opencv-python ultralytics \
+           deep-sort-realtime numpy python-multipart psycopg2-binary \
+           sqlalchemy alembic
 
-# Run tests
-poetry run python tests/test_basketball_vision.py
+# Setup database migrations
+alembic upgrade head
 
-# Run demo
-poetry run python demo.py
+# Start the complete application (API + Dashboard)
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
 
-# Start API server
-poetry run uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
+# Access the dashboard
+open http://localhost:8000/dashboard
 ```
 
-### Demo Output
+### Usage Examples
 
-The demo generates:
-- Annotated video with detections and tracking
-- Complete JSON analysis with timestamps
-- Individual frame visualizations
-- Processing statistics and performance metrics
+#### Upload and Analyze Video
+1. Visit http://localhost:8000/dashboard
+2. Click "Choose File" and select a basketball video
+3. Click "Upload & Analyze Video"
+4. Watch real-time progress and statistics
+5. View interactive shot chart and zone performance
+
+#### API Usage
+```python
+import requests
+
+# Upload video for analysis
+with open('basketball_game.mp4', 'rb') as f:
+    response = requests.post(
+        'http://localhost:8000/analyze/upload',
+        files={'file': f},
+        data={'confidence_threshold': 0.25}
+    )
+
+analysis_id = response.json()['analysis_id']
+
+# Get shot chart data
+shot_chart = requests.get(f'http://localhost:8000/analyze/{analysis_id}/shot-chart')
+```
+
+### Testing
+
+Run comprehensive tests covering all components:
+
+```bash
+# Run all tests
+pytest tests/ -v
+
+# Test specific components
+pytest tests/test_basketball_vision.py -v      # Vision system tests
+pytest tests/test_database_api.py -v           # Database and API tests
+```
 
 ### Performance Metrics
 
@@ -120,6 +255,8 @@ The demo generates:
 - High accuracy basketball detection
 - Robust multi-player tracking
 - Comprehensive analytics output
+- Scalable database storage
+- Responsive web interface
 
 ## Project Structure
 
@@ -133,22 +270,35 @@ Project_basket/
 ├── backend/               # FastAPI backend
 │   └── app/
 │       ├── main.py       # API endpoints
-│       └── models.py     # Pydantic data models
+│       ├── models.py     # Pydantic data models
+│       ├── database.py   # Database configuration
+│       ├── db_models.py  # SQLAlchemy models
+│       └── crud.py       # Database operations
+├── frontend/              # Interactive dashboard
+│   └── index.html        # Basketball analytics UI
+├── alembic/               # Database migrations
 ├── tests/                 # Test suite
-│   └── test_basketball_vision.py
+│   ├── test_basketball_vision.py    # Vision tests
+│   └── test_database_api.py         # Database/API tests
 ├── demo.py               # Comprehensive demo script
 └── pyproject.toml        # Dependencies and configuration
 ```
-
-## Next Phases
-
-- **Phase 2**: Backend & Database (Postgres, REST API)
-- **Phase 3**: Frontend (Interactive shot charts, live dashboard)
 
 ## Technology Stack
 
 - **Computer Vision**: OpenCV, Ultralytics YOLO
 - **Tracking**: DeepSORT
 - **Backend**: FastAPI, Pydantic
+- **Database**: PostgreSQL, SQLAlchemy, Alembic
+- **Frontend**: Vanilla JavaScript, HTML5, CSS3
 - **Data Processing**: NumPy
+- **Testing**: Pytest
 - **Package Management**: Poetry
+
+## Development Status
+
+✅ **Phase 1**: Computer vision and basic analytics - **COMPLETE**  
+✅ **Phase 2**: Backend & Database (Postgres, REST API) - **COMPLETE**  
+✅ **Phase 3**: Frontend (Interactive shot charts, live dashboard) - **COMPLETE**
+
+All phases have been successfully implemented with comprehensive testing and documentation.
