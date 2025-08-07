@@ -1,0 +1,1733 @@
+{
+  "video_metadata": {
+    "video_path": "demo_basketball.mp4",
+    "fps": 30.0,
+    "width": 640,
+    "height": 480,
+    "total_frames": 90,
+    "duration_seconds": 3.0
+  },
+  "processing_summary": {
+    "total_frames_processed": 90,
+    "frames_with_ball_detected": 43,
+    "ball_detection_rate": 0.4777777777777778,
+    "total_events_detected": 0,
+    "unique_players_tracked": 0
+  },
+  "game_statistics": {
+    "game_duration": 0.0,
+    "total_shots": 0,
+    "possession_changes": 0,
+    "player_stats": {},
+    "shot_chart": {
+      "attempts_by_zone": {},
+      "makes_by_zone": {},
+      "shot_positions": []
+    },
+    "possession_summary": {}
+  },
+  "tracking_statistics": {
+    "players": {},
+    "possession_history": [
+      {
+        "timestamp": 0.3,
+        "player_id": null,
+        "frame_id": 10,
+        "ball_position": [
+          "376.2594",
+          "272.21844"
+        ]
+      }
+    ],
+    "ball_trajectory": [
+      {
+        "timestamp": 1.2666666666666666,
+        "position": [
+          "377.69968",
+          "200.16644"
+        ],
+        "frame_id": 39
+      },
+      {
+        "timestamp": 1.6,
+        "position": [
+          "314.58203",
+          "244.98514"
+        ],
+        "frame_id": 49
+      },
+      {
+        "timestamp": 1.8666666666666667,
+        "position": [
+          "264.6145",
+          "278.88104"
+        ],
+        "frame_id": 57
+      },
+      {
+        "timestamp": 1.9666666666666666,
+        "position": [
+          "248.41696",
+          "286.80548"
+        ],
+        "frame_id": 60
+      },
+      {
+        "timestamp": 2.033333333333333,
+        "position": [
+          "240.7014",
+          "289.54803"
+        ],
+        "frame_id": 62
+      },
+      {
+        "timestamp": 2.066666666666667,
+        "position": [
+          "236.77165",
+          "289.11105"
+        ],
+        "frame_id": 63
+      },
+      {
+        "timestamp": 2.1,
+        "position": [
+          "232.42833",
+          "289.57092"
+        ],
+        "frame_id": 64
+      },
+      {
+        "timestamp": 2.1333333333333333,
+        "position": [
+          "229.6045",
+          "289.44543"
+        ],
+        "frame_id": 65
+      },
+      {
+        "timestamp": 2.2,
+        "position": [
+          "224.64435",
+          "287.96448"
+        ],
+        "frame_id": 67
+      },
+      {
+        "timestamp": 2.466666666666667,
+        "position": [
+          "222.90665",
+          "261.5323"
+        ],
+        "frame_id": 75
+      },
+      {
+        "timestamp": 2.5,
+        "position": [
+          "224.70258",
+          "257.68204"
+        ],
+        "frame_id": 76
+      },
+      {
+        "timestamp": 2.533333333333333,
+        "position": [
+          "226.39815",
+          "252.66809"
+        ],
+        "frame_id": 77
+      },
+      {
+        "timestamp": 2.6,
+        "position": [
+          "232.17847",
+          "242.2559"
+        ],
+        "frame_id": 79
+      },
+      {
+        "timestamp": 2.6333333333333333,
+        "position": [
+          "234.77592",
+          "237.54831"
+        ],
+        "frame_id": 80
+      },
+      {
+        "timestamp": 2.6666666666666665,
+        "position": [
+          "238.4654",
+          "232.62929"
+        ],
+        "frame_id": 81
+      },
+      {
+        "timestamp": 2.7,
+        "position": [
+          "242.54163",
+          "227.73216"
+        ],
+        "frame_id": 82
+      },
+      {
+        "timestamp": 2.7333333333333334,
+        "position": [
+          "248.16258",
+          "223.87967"
+        ],
+        "frame_id": 83
+      },
+      {
+        "timestamp": 2.7666666666666666,
+        "position": [
+          "251.74109",
+          "218.24878"
+        ],
+        "frame_id": 84
+      },
+      {
+        "timestamp": 2.8,
+        "position": [
+          "256.51703",
+          "214.53677"
+        ],
+        "frame_id": 85
+      },
+      {
+        "timestamp": 2.8333333333333335,
+        "position": [
+          "262.0432",
+          "209.46133"
+        ],
+        "frame_id": 86
+      }
+    ],
+    "total_players": 0
+  },
+  "frame_by_frame_data": [
+    {
+      "timestamp": 0.0,
+      "frame_id": 1,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.03333333333333333,
+      "frame_id": 2,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.06666666666666667,
+      "frame_id": 3,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.1,
+      "frame_id": 4,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.13333333333333333,
+      "frame_id": 5,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.16666666666666666,
+      "frame_id": 6,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.2,
+      "frame_id": 7,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.23333333333333334,
+      "frame_id": 8,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.26666666666666666,
+      "frame_id": 9,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.3,
+      "frame_id": 10,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "376.2594",
+          "272.21844"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "376.2594",
+        "272.21844"
+      ]
+    },
+    {
+      "timestamp": 0.3333333333333333,
+      "frame_id": 11,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.36666666666666664,
+      "frame_id": 12,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.4,
+      "frame_id": 13,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "391.9765",
+          "258.71082"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "391.9765",
+        "258.71082"
+      ]
+    },
+    {
+      "timestamp": 0.43333333333333335,
+      "frame_id": 14,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.4666666666666667,
+      "frame_id": 15,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "400.50922",
+          "248.48996"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "400.50922",
+        "248.48996"
+      ]
+    },
+    {
+      "timestamp": 0.5,
+      "frame_id": 16,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "404.84006",
+          "243.2909"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "404.84006",
+        "243.2909"
+      ]
+    },
+    {
+      "timestamp": 0.5333333333333333,
+      "frame_id": 17,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "408.14987",
+          "238.4773"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "408.14987",
+        "238.4773"
+      ]
+    },
+    {
+      "timestamp": 0.5666666666666667,
+      "frame_id": 18,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "410.70502",
+          "233.23074"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "410.70502",
+        "233.23074"
+      ]
+    },
+    {
+      "timestamp": 0.6,
+      "frame_id": 19,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "413.69324",
+          "228.65625"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "413.69324",
+        "228.65625"
+      ]
+    },
+    {
+      "timestamp": 0.6333333333333333,
+      "frame_id": 20,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "415.79114",
+          "223.9471"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "415.79114",
+        "223.9471"
+      ]
+    },
+    {
+      "timestamp": 0.6666666666666666,
+      "frame_id": 21,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.7,
+      "frame_id": 22,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "418.48706",
+          "214.62282"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "418.48706",
+        "214.62282"
+      ]
+    },
+    {
+      "timestamp": 0.7333333333333333,
+      "frame_id": 23,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "419.8982",
+          "210.0593"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "419.8982",
+        "210.0593"
+      ]
+    },
+    {
+      "timestamp": 0.7666666666666667,
+      "frame_id": 24,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 0.8,
+      "frame_id": 25,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "420.02917",
+          "204.11148"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "420.02917",
+        "204.11148"
+      ]
+    },
+    {
+      "timestamp": 0.8333333333333334,
+      "frame_id": 26,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "419.92984",
+          "200.11456"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "419.92984",
+        "200.11456"
+      ]
+    },
+    {
+      "timestamp": 0.8666666666666667,
+      "frame_id": 27,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "418.41974",
+          "197.5791"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "418.41974",
+        "197.5791"
+      ]
+    },
+    {
+      "timestamp": 0.9,
+      "frame_id": 28,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "417.30792",
+          "194.55614"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "417.30792",
+        "194.55614"
+      ]
+    },
+    {
+      "timestamp": 0.9333333333333333,
+      "frame_id": 29,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "415.83142",
+          "192.84418"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "415.83142",
+        "192.84418"
+      ]
+    },
+    {
+      "timestamp": 0.9666666666666667,
+      "frame_id": 30,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "413.46606",
+          "191.81961"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "413.46606",
+        "191.81961"
+      ]
+    },
+    {
+      "timestamp": 1.0,
+      "frame_id": 31,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "410.65277",
+          "190.58115"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "410.65277",
+        "190.58115"
+      ]
+    },
+    {
+      "timestamp": 1.0333333333333334,
+      "frame_id": 32,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "408.12875",
+          "190.81279"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "408.12875",
+        "190.81279"
+      ]
+    },
+    {
+      "timestamp": 1.0666666666666667,
+      "frame_id": 33,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.1,
+      "frame_id": 34,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "400.6139",
+          "190.69934"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "400.6139",
+        "190.69934"
+      ]
+    },
+    {
+      "timestamp": 1.1333333333333333,
+      "frame_id": 35,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "396.38898",
+          "191.95366"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "396.38898",
+        "191.95366"
+      ]
+    },
+    {
+      "timestamp": 1.1666666666666667,
+      "frame_id": 36,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "393.12964",
+          "193.33517"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "393.12964",
+        "193.33517"
+      ]
+    },
+    {
+      "timestamp": 1.2,
+      "frame_id": 37,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "387.9688",
+          "195.64978"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "387.9688",
+        "195.64978"
+      ]
+    },
+    {
+      "timestamp": 1.2333333333333334,
+      "frame_id": 38,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "382.58856",
+          "197.3982"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "382.58856",
+        "197.3982"
+      ]
+    },
+    {
+      "timestamp": 1.2666666666666666,
+      "frame_id": 39,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "377.69968",
+          "200.16644"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "377.69968",
+        "200.16644"
+      ]
+    },
+    {
+      "timestamp": 1.3,
+      "frame_id": 40,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.3333333333333333,
+      "frame_id": 41,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.3666666666666667,
+      "frame_id": 42,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.4,
+      "frame_id": 43,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.4333333333333333,
+      "frame_id": 44,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.4666666666666666,
+      "frame_id": 45,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.5,
+      "frame_id": 46,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.5333333333333334,
+      "frame_id": 47,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.5666666666666667,
+      "frame_id": 48,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.6,
+      "frame_id": 49,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "314.58203",
+          "244.98514"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "314.58203",
+        "244.98514"
+      ]
+    },
+    {
+      "timestamp": 1.6333333333333333,
+      "frame_id": 50,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.6666666666666667,
+      "frame_id": 51,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.7,
+      "frame_id": 52,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.7333333333333334,
+      "frame_id": 53,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.7666666666666666,
+      "frame_id": 54,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.8,
+      "frame_id": 55,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.8333333333333333,
+      "frame_id": 56,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.8666666666666667,
+      "frame_id": 57,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "264.6145",
+          "278.88104"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "264.6145",
+        "278.88104"
+      ]
+    },
+    {
+      "timestamp": 1.9,
+      "frame_id": 58,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.9333333333333333,
+      "frame_id": 59,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 1.9666666666666666,
+      "frame_id": 60,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "248.41696",
+          "286.80548"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "248.41696",
+        "286.80548"
+      ]
+    },
+    {
+      "timestamp": 2.0,
+      "frame_id": 61,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 2.033333333333333,
+      "frame_id": 62,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "240.7014",
+          "289.54803"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "240.7014",
+        "289.54803"
+      ]
+    },
+    {
+      "timestamp": 2.066666666666667,
+      "frame_id": 63,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "236.77165",
+          "289.11105"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "236.77165",
+        "289.11105"
+      ]
+    },
+    {
+      "timestamp": 2.1,
+      "frame_id": 64,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "232.42833",
+          "289.57092"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "232.42833",
+        "289.57092"
+      ]
+    },
+    {
+      "timestamp": 2.1333333333333333,
+      "frame_id": 65,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "229.6045",
+          "289.44543"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "229.6045",
+        "289.44543"
+      ]
+    },
+    {
+      "timestamp": 2.1666666666666665,
+      "frame_id": 66,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 2.2,
+      "frame_id": 67,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "224.64435",
+          "287.96448"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "224.64435",
+        "287.96448"
+      ]
+    },
+    {
+      "timestamp": 2.2333333333333334,
+      "frame_id": 68,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 2.2666666666666666,
+      "frame_id": 69,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 2.3,
+      "frame_id": 70,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 2.3333333333333335,
+      "frame_id": 71,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 2.3666666666666667,
+      "frame_id": 72,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 2.4,
+      "frame_id": 73,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 2.433333333333333,
+      "frame_id": 74,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 2.466666666666667,
+      "frame_id": 75,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "222.90665",
+          "261.5323"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "222.90665",
+        "261.5323"
+      ]
+    },
+    {
+      "timestamp": 2.5,
+      "frame_id": 76,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "224.70258",
+          "257.68204"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "224.70258",
+        "257.68204"
+      ]
+    },
+    {
+      "timestamp": 2.533333333333333,
+      "frame_id": 77,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "226.39815",
+          "252.66809"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "226.39815",
+        "252.66809"
+      ]
+    },
+    {
+      "timestamp": 2.566666666666667,
+      "frame_id": 78,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 2.6,
+      "frame_id": 79,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "232.17847",
+          "242.2559"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "232.17847",
+        "242.2559"
+      ]
+    },
+    {
+      "timestamp": 2.6333333333333333,
+      "frame_id": 80,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "234.77592",
+          "237.54831"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "234.77592",
+        "237.54831"
+      ]
+    },
+    {
+      "timestamp": 2.6666666666666665,
+      "frame_id": 81,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "238.4654",
+          "232.62929"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "238.4654",
+        "232.62929"
+      ]
+    },
+    {
+      "timestamp": 2.7,
+      "frame_id": 82,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "242.54163",
+          "227.73216"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "242.54163",
+        "227.73216"
+      ]
+    },
+    {
+      "timestamp": 2.7333333333333334,
+      "frame_id": 83,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "248.16258",
+          "223.87967"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "248.16258",
+        "223.87967"
+      ]
+    },
+    {
+      "timestamp": 2.7666666666666666,
+      "frame_id": 84,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "251.74109",
+          "218.24878"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "251.74109",
+        "218.24878"
+      ]
+    },
+    {
+      "timestamp": 2.8,
+      "frame_id": 85,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "256.51703",
+          "214.53677"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "256.51703",
+        "214.53677"
+      ]
+    },
+    {
+      "timestamp": 2.8333333333333335,
+      "frame_id": 86,
+      "players_detected": 0,
+      "ball_detected": true,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": [
+          "262.0432",
+          "209.46133"
+        ],
+        "confidence": 0.0
+      },
+      "ball_position": [
+        "262.0432",
+        "209.46133"
+      ]
+    },
+    {
+      "timestamp": 2.8666666666666667,
+      "frame_id": 87,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 2.9,
+      "frame_id": 88,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 2.933333333333333,
+      "frame_id": 89,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    },
+    {
+      "timestamp": 2.966666666666667,
+      "frame_id": 90,
+      "players_detected": 0,
+      "ball_detected": false,
+      "tracked_players": [],
+      "events": [],
+      "possession": {
+        "player_id": null,
+        "ball_position": null,
+        "confidence": 0.0
+      },
+      "ball_position": null
+    }
+  ],
+  "shot_chart": {
+    "attempts_by_zone": {},
+    "makes_by_zone": {},
+    "shot_positions": []
+  },
+  "possession_analysis": {},
+  "player_performance": {}
+}
