@@ -3,6 +3,11 @@ name = "project_basket"
 version = "0.1.0"
 description = ""
 authors = []
+packages = [
+    {include = "backend"},
+    {include = "vision"},
+    {include = "workers"}
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -11,7 +16,9 @@ uvicorn = {extras = ["standard"], version = "*"}
 pydantic = "*"
 opencv-python = "*"
 ultralytics = "*"
-
+deep-sort-realtime = "*"
+numpy = "*"
+python-multipart = "*"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "*"
