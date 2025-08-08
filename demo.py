@@ -228,7 +228,6 @@ def demo_full_processor():
     print(f"Unique players tracked: {results['processing_summary']['unique_players_tracked']}")
     
     # Display some analytics
-    game_stats = results['game_statistics']
     print(f"Total events detected: {results['processing_summary']['total_events_detected']}")
     
     print("\nOutput files created:")
