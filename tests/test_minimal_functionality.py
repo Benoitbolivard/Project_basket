@@ -1,5 +1,4 @@
 """Simple test for job status endpoint and JWT login"""
-import pytest
 import sys
 from pathlib import Path
 

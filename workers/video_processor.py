@@ -90,8 +90,6 @@ def calculate_enhanced_stats(results: Dict[str, Any]) -> Dict[str, Any]:
     }
     
     try:
-        video_metadata = results.get('video_metadata', {})
-        fps = video_metadata.get('fps', 30)
         frame_data = results.get('frame_by_frame_data', [])
         
         if not frame_data:
@@ -100,7 +98,6 @@ def calculate_enhanced_stats(results: Dict[str, Any]) -> Dict[str, Any]:
         # Player tracking data
         player_positions = {}  # {player_id: [(x, y, timestamp), ...]}
         ball_touches = {}      # {player_id: count}
-        zone_times = {}        # {player_id: {zone: seconds}}
         
         # Process frame-by-frame data
         for frame in frame_data:

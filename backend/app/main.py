@@ -1,9 +1,10 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks, File, UploadFile, Depends
+from fastapi import FastAPI, HTTPException, BackgroundTasks, File, UploadFile, Depends, Form
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from pathlib import Path
+from typing import Optional
 import tempfile
 import uuid
 import os
@@ -11,6 +12,7 @@ import sys
 import redis
 from rq import Queue
 from rq.job import Job
+from contextlib import asynccontextmanager
 
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -33,7 +35,24 @@ from .auth import (
     require_club_access
 )
 
-app = FastAPI(title="Basketball Analytics API", version="1.0.0")
+# Initialize Redis connection for job queue
+redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379')
+try:
+    redis_conn = redis.from_url(redis_url)
+    job_queue = Queue('video_processing', connection=redis_conn)
+except Exception as e:
+    print(f"Redis connection failed: {e}. Job queue disabled.")
+    redis_conn = None
+    job_queue = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize database on startup
+    init_db()
+    yield
+    # Cleanup on shutdown (if needed)
+
+app = FastAPI(title="Basketball Analytics API", version="1.0.0", lifespan=lifespan)
 
 # Environment variables with defaults
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001").split(",")
@@ -51,21 +70,6 @@ app.add_middleware(
 frontend_path = Path(__file__).parent.parent.parent / "frontend"
 if frontend_path.exists():
     app.mount("/dashboard", StaticFiles(directory=str(frontend_path), html=True), name="dashboard")
-
-# Initialize database on startup
-@app.on_event("startup")
-async def startup_event():
-    init_db()
-
-# Initialize Redis connection for job queue
-redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379')
-try:
-    redis_conn = redis.from_url(redis_url)
-    job_queue = Queue('video_processing', connection=redis_conn)
-except Exception as e:
-    print(f"Redis connection failed: {e}. Job queue disabled.")
-    redis_conn = None
-    job_queue = None
 
 # Global processor instance
 processor = None
@@ -765,11 +769,11 @@ async def get_match_stats(match_id: int, db: Session = Depends(get_db)):
 # Authentication endpoints
 @app.post("/auth/register")
 async def register_user(
-    username: str,
-    email: str,
-    password: str,
-    role: str = "public",
-    club_id: int = None,
+    username: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    role: str = Form("public"),
+    club_id: Optional[int] = Form(None),
     db: Session = Depends(get_db)
 ):
     """Register a new user."""
@@ -811,8 +815,8 @@ async def register_user(
 
 @app.post("/auth/login")
 async def login_user(
-    username: str,
-    password: str,
+    username: str = Form(...),
+    password: str = Form(...),
     db: Session = Depends(get_db)
 ):
     """Login user and return access token."""
@@ -854,8 +858,8 @@ async def login_user(
 
 @app.post("/auth/jwt/login")
 async def jwt_login_user(
-    username: str,
-    password: str,
+    username: str = Form(...),
+    password: str = Form(...),
     db: Session = Depends(get_db)
 ):
     """JWT login endpoint (alias for /auth/login) for frontend compatibility."""
