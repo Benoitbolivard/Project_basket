@@ -14,3 +14,29 @@ venv/
 
 # macOS
 .DS_Store
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Next.js
+.next/
+out/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Demo output
+demo_output/
+demo_*.jpg
+demo_*.mp4
+
+# Vision model files
+*.pt
+*.weights
+*.onnx
