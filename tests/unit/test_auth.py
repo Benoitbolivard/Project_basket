@@ -6,11 +6,9 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from backend.app.main import app
 from backend.app.database import get_db, SessionLocal
-from backend.app import crud, db_models
+from backend.app import crud
 from backend.app.auth import hash_password, verify_password, create_access_token, decode_access_token
 from fastapi.testclient import TestClient
-import pytest
-from datetime import datetime
 
 
 def get_test_db():

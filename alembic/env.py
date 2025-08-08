@@ -1,9 +1,17 @@
+import sys
 from logging.config import fileConfig
+from pathlib import Path
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+
+# Add project root to path for imports
+sys.path.append(str(Path(__file__).parent.parent))
+
+from backend.app.database import Base
+from backend.app.db_models import *  # Import all models  # noqa: F403, F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -16,12 +24,6 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).parent.parent))
-
-from backend.app.database import Base
-from backend.app.db_models import *  # Import all models
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

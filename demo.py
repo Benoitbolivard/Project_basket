@@ -5,20 +5,21 @@ Demonstrates the complete Phase 1 functionality.
 """
 
 import cv2
-import numpy as np
 import json
+import sys
 import time
 from pathlib import Path
-import sys
+
+import numpy as np
 
 # Add project root to path
 project_root = Path(__file__).parent
 sys.path.append(str(project_root))
 
-from vision.detector import BasketballDetector
-from vision.tracker import BasketballTracker
 from vision.analytics import BasketballAnalytics
+from vision.detector import BasketballDetector
 from vision.processor import BasketballVideoProcessor
+from vision.tracker import BasketballTracker
 
 
 def create_demo_video(output_path: str = "demo_basketball.mp4", duration: int = 10):
@@ -188,7 +189,7 @@ def demo_analytics():
     
     # Get final statistics
     game_stats = analytics.get_game_statistics()
-    print(f"\nGame Statistics:")
+    print("\nGame Statistics:")
     print(f"  Total shots: {game_stats['total_shots']}")
     print(f"  Possession changes: {game_stats['possession_changes']}")
     print(f"  Players tracked: {len(game_stats['player_stats'])}")
@@ -240,7 +241,7 @@ def demo_api_usage():
     print("\n=== API Usage Demo ===")
     
     # This would typically be done with HTTP requests
-    from backend.app.models import AnalysisRequest, VideoAnalysisResult
+    from backend.app.models import AnalysisRequest
     
     # Create a sample request
     request = AnalysisRequest(

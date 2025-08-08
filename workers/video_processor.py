@@ -3,7 +3,6 @@
 import os
 import sys
 from pathlib import Path
-import json
 from typing import Dict, Any
 
 # Add project root to path
@@ -11,7 +10,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from vision.processor import BasketballVideoProcessor
 from backend.app.database import SessionLocal
-from backend.app import crud, db_models
+from backend.app import crud
 
 
 def process_video_job(analysis_id: str, video_path: str, config: Dict[str, Any]) -> Dict[str, Any]:
@@ -181,7 +180,7 @@ def calculate_enhanced_stats(results: Dict[str, Any]) -> Dict[str, Any]:
 
 if __name__ == "__main__":
     # This can be run as a standalone worker
-    from rq import Worker, Queue, Connection
+    from rq import Worker, Connection
     import redis
     
     redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379')

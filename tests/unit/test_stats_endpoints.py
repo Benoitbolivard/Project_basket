@@ -8,7 +8,6 @@ from backend.app.main import app
 from backend.app.database import get_db, SessionLocal
 from backend.app import crud, db_models
 from fastapi.testclient import TestClient
-import pytest
 from datetime import datetime
 
 

@@ -3,7 +3,7 @@
 import cv2
 import numpy as np
 from ultralytics import YOLO
-from typing import List, Dict, Tuple, Optional
+from typing import Dict, Tuple
 import time
 
 

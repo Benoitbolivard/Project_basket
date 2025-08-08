@@ -1,7 +1,7 @@
 """Pydantic models for basketball analysis API."""
 
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Tuple, Union, Any
+from typing import List, Optional, Dict, Tuple, Any
 from datetime import datetime
 
 

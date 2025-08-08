@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import json
 import time
-from typing import Dict, List, Optional, Union
+from typing import Dict, Optional
 from pathlib import Path
 
 from .detector import BasketballDetector

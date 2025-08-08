@@ -1,8 +1,6 @@
 """Test database integration and API endpoints."""
 
 import pytest
-import tempfile
-import json
 import uuid
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
