@@ -27,7 +27,7 @@ class Club(Base):
 
 class ClubPlayer(Base):
     """Player entity for a club."""
-    __tablename__ = "players"
+    __tablename__ = "club_players"
     
     id = Column(Integer, primary_key=True, index=True)
     club_id = Column(Integer, ForeignKey("clubs.id"), nullable=False)
@@ -74,7 +74,7 @@ class StatPublic(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     match_id = Column(Integer, ForeignKey("matches.id"), nullable=False)
-    player_id = Column(Integer, ForeignKey("players.id"), nullable=False)
+    player_id = Column(Integer, ForeignKey("club_players.id"), nullable=False)
     
     # Basic stats
     minutes_played = Column(Float, default=0.0)
@@ -141,7 +141,7 @@ class JobStatus(Base):
     result = Column(JSON, nullable=True)
     error_message = Column(Text, nullable=True)
     progress = Column(Float, default=0.0)  # 0.0 to 1.0
-    metadata = Column(JSON, nullable=True)  # Additional job metadata
+    job_metadata = Column(JSON, nullable=True)  # Additional job metadata
 
 
 class Analysis(Base):
