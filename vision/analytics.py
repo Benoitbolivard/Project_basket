@@ -2,10 +2,9 @@
 
 import cv2
 import numpy as np
-from typing import List, Dict, Tuple, Optional, Union
+from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 from collections import defaultdict
-import time
 
 
 @dataclass

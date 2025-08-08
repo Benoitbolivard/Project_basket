@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks, File, UploadFile, Depends
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
@@ -8,11 +8,9 @@ import tempfile
 import uuid
 import os
 import sys
-from typing import Dict, Any, List
 import redis
 from rq import Queue
 from rq.job import Job
-from datetime import timedelta
 
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -38,7 +36,6 @@ from .auth import (
 app = FastAPI(title="Basketball Analytics API", version="1.0.0")
 
 # Environment variables with defaults
-import os
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001").split(",")
 
 # Add CORS middleware
@@ -116,7 +113,7 @@ async def analyze_video(
         analysis_id = str(uuid.uuid4())
         
         # Create analysis record in database
-        db_analysis = crud.create_analysis(
+        crud.create_analysis(
             db, 
             analysis_id, 
             request.video_path,
