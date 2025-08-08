@@ -10,7 +10,8 @@ import os
 import sys
 from typing import Dict, Any, List
 import redis
-from rq import Queue, Job
+from rq import Queue
+from rq.job import Job
 from datetime import timedelta
 
 # Add project root to path

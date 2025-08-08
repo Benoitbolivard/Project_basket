@@ -19,6 +19,10 @@ ultralytics = "*"
 deep-sort-realtime = "*"
 numpy = "*"
 python-multipart = "*"
+sqlalchemy = "*"
+httpx = "*"
+redis = "*"
+rq = "*"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "*"
