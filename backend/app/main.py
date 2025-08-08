@@ -852,6 +852,16 @@ async def login_user(
         raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
 
 
+@app.post("/auth/jwt/login")
+async def jwt_login_user(
+    username: str,
+    password: str,
+    db: Session = Depends(get_db)
+):
+    """JWT login endpoint (alias for /auth/login) for frontend compatibility."""
+    return await login_user(username, password, db)
+
+
 @app.get("/auth/me")
 async def get_current_user_info(current_user = Depends(get_current_user)):
     """Get current user information."""
